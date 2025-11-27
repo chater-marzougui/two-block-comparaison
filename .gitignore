@@ -17,3 +17,25 @@ October2023
 October2024
 September2023
 September2024
+
+# Data exploration output files (large processed data)
+exploration_output/tour_a_processed.csv
+exploration_output/tour_b_processed.csv
+exploration_output/*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# React dashboard
+dashboard/node_modules/
+dashboard/build/
+dashboard/.env
+dashboard/.env.local
+dashboard/.env.development.local
+dashboard/.env.test.local
+dashboard/.env.production.local
+dashboard/npm-debug.log*
+dashboard/yarn-debug.log*
+dashboard/yarn-error.log*
