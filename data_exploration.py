@@ -10,7 +10,7 @@ Meters/Counters Reference (from Metadonnees_13compteurs.pdf):
 - CLIM_TOUR_A_(TGBT_D6): Tour A - Heat pump/AC (currently Tour B climate)
 - Additional Tour B rooms: B201, B112, B101
 
-Author: GitHub Copilot
+Author: Data Analysis Script
 Date: November 2024
 """
 

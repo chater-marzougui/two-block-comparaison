@@ -27,3 +27,15 @@ exploration_output/*.csv
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# React dashboard
+dashboard/node_modules/
+dashboard/build/
+dashboard/.env
+dashboard/.env.local
+dashboard/.env.development.local
+dashboard/.env.test.local
+dashboard/.env.production.local
+dashboard/npm-debug.log*
+dashboard/yarn-debug.log*
+dashboard/yarn-error.log*
