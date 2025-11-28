@@ -79,10 +79,13 @@ function Dashboard() {
     : 0;
   const moreEfficient = tourA.avgPower < tourB.avgPower ? 'Tour A' : 'Tour B';
 
-  // Get date range
+  // Get date range for subtitle
   const dateRange = dataInfo?.dateRange 
     ? `${new Date(dataInfo.dateRange.start).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${new Date(dataInfo.dateRange.end).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
     : '';
+  const subtitle = dateRange 
+    ? `Tour A vs Tour B Comparative Analysis | ${dateRange}` 
+    : 'Tour A vs Tour B Comparative Analysis';
 
   return (
     <div className="App">
@@ -107,7 +110,7 @@ function Dashboard() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          Tour A vs Tour B Comparative Analysis{dateRange && ` | ${dateRange}`}
+          {subtitle}
         </motion.p>
       </motion.header>
 

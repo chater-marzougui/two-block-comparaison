@@ -13,6 +13,10 @@ import {
 } from 'recharts';
 import { useData } from '../context/DataContext';
 
+// Constants for energy calculation
+const HOURS_PER_DAY = 24;
+const DAYS_PER_MONTH = 30;
+
 const MonthlyChart: React.FC = () => {
   const { monthlyData, loading, error } = useData();
 
@@ -20,11 +24,11 @@ const MonthlyChart: React.FC = () => {
     return null;
   }
 
-  // Calculate cumulative energy for each month (power * 24hrs * ~30 days)
+  // Calculate cumulative energy for each month (power * hours/day * days/month)
   const dataWithEnergy = monthlyData.map(item => ({
     ...item,
-    tourAEnergy: item.tourAEnergy || Math.round(item.tourA * 24 * 30),
-    tourBEnergy: item.tourBEnergy || Math.round(item.tourB * 24 * 30),
+    tourAEnergy: item.tourAEnergy || Math.round(item.tourA * HOURS_PER_DAY * DAYS_PER_MONTH),
+    tourBEnergy: item.tourBEnergy || Math.round(item.tourB * HOURS_PER_DAY * DAYS_PER_MONTH),
   }));
 
   return (
