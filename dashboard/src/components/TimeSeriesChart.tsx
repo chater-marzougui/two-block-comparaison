@@ -10,9 +10,20 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { timeSeriesData } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const TimeSeriesChart: React.FC = () => {
+  const { timeSeriesData, loading, error, dataInfo } = useData();
+
+  if (loading || error || timeSeriesData.length === 0) {
+    return null;
+  }
+
+  // Get date range for subtitle
+  const dateRange = dataInfo?.dateRange 
+    ? `${new Date(dataInfo.dateRange.start).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} - ${new Date(dataInfo.dateRange.end).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+    : '';
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -21,7 +32,7 @@ const TimeSeriesChart: React.FC = () => {
       className="chart-container full-width"
     >
       <h2 className="chart-title">📊 Daily Power Consumption Over Time</h2>
-      <p className="chart-subtitle">January - February 2025</p>
+      <p className="chart-subtitle">{dateRange}</p>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={timeSeriesData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />

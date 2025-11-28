@@ -10,9 +10,15 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { weeklyData } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const WeeklyChart: React.FC = () => {
+  const { weeklyData, loading, error } = useData();
+
+  if (loading || error || weeklyData.length === 0) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

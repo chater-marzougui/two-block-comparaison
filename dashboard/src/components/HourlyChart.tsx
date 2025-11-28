@@ -10,9 +10,15 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { hourlyData } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const HourlyChart: React.FC = () => {
+  const { hourlyData, loading, error } = useData();
+
+  if (loading || error || hourlyData.length === 0) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
