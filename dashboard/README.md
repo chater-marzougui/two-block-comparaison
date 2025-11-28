@@ -1,46 +1,123 @@
-# Getting Started with Create React App
+# Power Consumption Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Interactive React dashboard for visualizing and comparing power consumption between Tour A and Tour B buildings.
+
+## Features
+
+- **Dynamic Filtering**: Filter data by month, day of week, and time aggregation
+- **Real-time Data**: Fetches data from Flask backend API
+- **Fallback Mode**: Works with static data when API is unavailable
+- **Interactive Charts**: Built with Recharts for smooth animations
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Components
+
+| Component | Description |
+|-----------|-------------|
+| `FilterPanel` | Interactive filter controls for month, day, and aggregation |
+| `StatCard` | Summary statistics display cards |
+| `HourlyChart` | Bar chart showing hourly consumption patterns |
+| `WeeklyChart` | Weekly consumption comparison |
+| `MonthlyChart` | Monthly trends with energy estimates |
+| `TimeSeriesChart` | Daily/hourly time series visualization |
+| `EfficiencyMetrics` | Load factor, energy consumption metrics |
+| `InsightCards` | Key insights and findings |
+| `ComparisonRadar` | Multi-dimensional comparison radar chart |
+| `TourComparison` | Side-by-side metric comparison table |
+
+## Setup
+
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+- Flask backend running (optional, for live data)
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+```
+
+The dashboard will be available at `http://localhost:3000`
+
+### Environment Variables
+
+Create a `.env` file to configure the API URL:
+
+```
+REACT_APP_API_URL=http://localhost:5000/api
+```
+
+## Architecture
+
+```
+src/
+├── components/          # React UI components
+│   ├── FilterPanel.tsx  # Filter controls
+│   ├── StatCard.tsx     # Stats display
+│   ├── HourlyChart.tsx  # Hourly patterns
+│   ├── WeeklyChart.tsx  # Weekly patterns
+│   ├── MonthlyChart.tsx # Monthly trends
+│   ├── TimeSeriesChart.tsx
+│   ├── EfficiencyMetrics.tsx
+│   ├── InsightCards.tsx
+│   ├── ComparisonRadar.tsx
+│   └── TourComparison.tsx
+├── context/
+│   └── DataContext.tsx  # Global state management
+├── services/
+│   └── api.ts           # API client
+├── data/
+│   └── powerData.ts     # Static fallback data
+├── App.tsx              # Main application
+└── App.css              # Global styles
+```
+
+## Data Flow
+
+1. **DataContext** manages global state and fetches data from API
+2. **FilterPanel** allows users to set filters
+3. Filter changes trigger new API requests
+4. Components render updated data automatically
+5. Falls back to static data if API is unavailable
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000)
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production to the `build` folder
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### `npm test`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Launches the test runner
 
-### `npm run eject`
+## Dependencies
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- **React 18**: UI framework
+- **Recharts**: Charting library
+- **Framer Motion**: Animations
+- **TypeScript**: Type safety
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Styling
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Uses CSS with:
+- CSS Grid for responsive layouts
+- CSS custom properties for theming
+- Gradient backgrounds for visual appeal
+- Smooth transitions and animations
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Browser Support
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)

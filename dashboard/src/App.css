@@ -40,6 +40,32 @@ body {
   opacity: 0.9;
 }
 
+/* Filter Section */
+.filter-section {
+  margin-bottom: 25px;
+}
+
+/* Error Message */
+.error-message {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.error-message p {
+  color: #856404;
+  margin: 0;
+}
+
+.error-message .error-note {
+  font-size: 0.85rem;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
 /* Stats Section */
 .stats-section {
   margin-bottom: 40px;
