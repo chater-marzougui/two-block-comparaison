@@ -127,7 +127,7 @@ function Dashboard() {
             value={`${tourA.avgPower} kW`}
             subtitle="Power consumption"
             icon="🏢"
-            color="#FF6B6B"
+            color="#ef4444"
             delay={0.1}
           />
           <StatCard
@@ -135,7 +135,7 @@ function Dashboard() {
             value={`${tourB.avgPower} kW`}
             subtitle="Power consumption"
             icon="🏬"
-            color="#4ECDC4"
+            color="#10b981"
             delay={0.2}
           />
           <StatCard
@@ -143,7 +143,7 @@ function Dashboard() {
             value={`${efficiencyDiff.toFixed(1)}%`}
             subtitle={`${moreEfficient} more efficient`}
             icon="📉"
-            color="#45B7D1"
+            color="#3b82f6"
             delay={0.3}
           />
           <StatCard
@@ -151,7 +151,7 @@ function Dashboard() {
             value={`~${Math.max(tourA.maxPower, tourB.maxPower).toFixed(1)} kW`}
             subtitle="Maximum recorded"
             icon="⚡"
-            color="#96CEB4"
+            color="#f59e0b"
             delay={0.4}
           />
           <StatCard
@@ -159,7 +159,7 @@ function Dashboard() {
             value={tourA.loadFactor?.toFixed(3) || '0.000'}
             subtitle="Capacity utilization"
             icon="📊"
-            color="#9B59B6"
+            color="#8b5cf6"
             delay={0.5}
           />
           <StatCard
@@ -167,7 +167,7 @@ function Dashboard() {
             value={tourB.loadFactor?.toFixed(3) || '0.000'}
             subtitle="Capacity utilization"
             icon="📊"
-            color="#3498DB"
+            color="#06b6d4"
             delay={0.6}
           />
         </div>
@@ -208,17 +208,6 @@ function Dashboard() {
           <TourComparison />
         </div>
       </section>
-
-      {/* Footer */}
-      <motion.footer 
-        className="footer"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-      >
-        <p>SInERT Project - Power Consumption Analysis Dashboard</p>
-        <p className="footer-note">Data from {dateRange}</p>
-      </motion.footer>
     </div>
   );
 }

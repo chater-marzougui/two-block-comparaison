@@ -21,18 +21,18 @@ const EfficiencyMetrics: React.FC = () => {
   }
 
   const loadFactorData = [
-    { name: 'Tour A', value: tourA.loadFactor, fill: '#FF6B6B' },
-    { name: 'Tour B', value: tourB.loadFactor, fill: '#4ECDC4' },
+    { name: 'Tour A', value: tourA.loadFactor, fill: '#ef4444' },
+    { name: 'Tour B', value: tourB.loadFactor, fill: '#10b981' },
   ];
 
   const peakToAvgData = [
-    { name: 'Tour A', value: tourA.peakToAvgRatio, fill: '#FF6B6B' },
-    { name: 'Tour B', value: tourB.peakToAvgRatio, fill: '#4ECDC4' },
+    { name: 'Tour A', value: tourA.peakToAvgRatio, fill: '#ef4444' },
+    { name: 'Tour B', value: tourB.peakToAvgRatio, fill: '#10b981' },
   ];
 
   const energyData = [
-    { name: 'Tour A', value: tourA.totalEnergyKwh, fill: '#FF6B6B' },
-    { name: 'Tour B', value: tourB.totalEnergyKwh, fill: '#4ECDC4' },
+    { name: 'Tour A', value: tourA.totalEnergyKwh, fill: '#ef4444' },
+    { name: 'Tour B', value: tourB.totalEnergyKwh, fill: '#10b981' },
   ];
 
   const weekdayWeekendData = [

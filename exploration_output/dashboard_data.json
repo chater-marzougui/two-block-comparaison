@@ -1,232 +1,537 @@
 {
-  "generatedAt": "2025-11-28T01:40:31.711075",
+  "generatedAt": "2025-11-28T15:42:34.019275",
   "dateRange": {
-    "start": "2023-11-01 00:00:00",
-    "end": "2025-02-28 23:45:00"
+    "start": "2023-09-01 00:00:00",
+    "end": "2025-05-18 23:45:00"
   },
   "tourSummary": [
     {
       "name": "Tour A",
-      "avgPower": 3.23,
-      "maxPower": 9.94,
-      "minPower": 1.11,
+      "avgPower": 3.37,
+      "maxPower": 11.95,
+      "minPower": 0.49,
       "powerFactor": 0,
-      "weekdayAvg": 3.6,
-      "weekendAvg": 2.29,
-      "dataCoverage": 81.4,
-      "estimatedDailyKwh": 77.6,
-      "estimatedMonthlyKwh": 2328.0,
-      "loadFactor": 0.325,
-      "peakToAvgRatio": 3.07,
-      "totalEnergyKwh": 9470.0
+      "weekdayAvg": 3.81,
+      "weekendAvg": 2.31,
+      "dataCoverage": 92.8,
+      "estimatedDailyKwh": 80.9,
+      "estimatedMonthlyKwh": 2428.0,
+      "loadFactor": 0.282,
+      "peakToAvgRatio": 3.54,
+      "totalEnergyKwh": 47108.0
     },
     {
       "name": "Tour B",
-      "avgPower": 3.37,
-      "maxPower": 12.43,
-      "minPower": 1.09,
+      "avgPower": 3.64,
+      "maxPower": 17.63,
+      "minPower": 0.11,
       "powerFactor": 0,
-      "weekdayAvg": 3.73,
-      "weekendAvg": 2.41,
-      "dataCoverage": 99.1,
-      "estimatedDailyKwh": 80.9,
-      "estimatedMonthlyKwh": 2428.0,
-      "loadFactor": 0.271,
-      "peakToAvgRatio": 3.69,
-      "totalEnergyKwh": 12026.0
+      "weekdayAvg": 4.07,
+      "weekendAvg": 2.61,
+      "dataCoverage": 97.9,
+      "estimatedDailyKwh": 87.4,
+      "estimatedMonthlyKwh": 2623.0,
+      "loadFactor": 0.207,
+      "peakToAvgRatio": 4.84,
+      "totalEnergyKwh": 53654.0
     }
   ],
   "hourlyData": [
     {
       "hour": 0,
-      "tourA": 2.25,
-      "tourB": 2.3,
-      "difference": 0.05
+      "tourA": 2.36,
+      "tourB": 2.58,
+      "difference": 0.22
     },
     {
       "hour": 1,
-      "tourA": 2.24,
-      "tourB": 2.28,
-      "difference": 0.04
+      "tourA": 2.33,
+      "tourB": 2.56,
+      "difference": 0.23
     },
     {
       "hour": 2,
-      "tourA": 2.24,
-      "tourB": 2.29,
-      "difference": 0.05
+      "tourA": 2.32,
+      "tourB": 2.54,
+      "difference": 0.22
     },
     {
       "hour": 3,
-      "tourA": 2.24,
-      "tourB": 2.28,
-      "difference": 0.04
+      "tourA": 2.31,
+      "tourB": 2.53,
+      "difference": 0.22
     },
     {
       "hour": 4,
-      "tourA": 2.24,
-      "tourB": 2.29,
-      "difference": 0.04
+      "tourA": 2.29,
+      "tourB": 2.52,
+      "difference": 0.23
     },
     {
       "hour": 5,
-      "tourA": 2.21,
-      "tourB": 2.29,
-      "difference": 0.08
+      "tourA": 2.25,
+      "tourB": 2.51,
+      "difference": 0.27
     },
     {
       "hour": 6,
-      "tourA": 2.32,
-      "tourB": 2.38,
-      "difference": 0.07
+      "tourA": 2.31,
+      "tourB": 2.64,
+      "difference": 0.33
     },
     {
       "hour": 7,
-      "tourA": 2.33,
-      "tourB": 2.93,
-      "difference": 0.59
+      "tourA": 2.64,
+      "tourB": 3.18,
+      "difference": 0.55
     },
     {
       "hour": 8,
-      "tourA": 2.95,
-      "tourB": 3.5,
-      "difference": 0.54
+      "tourA": 3.43,
+      "tourB": 3.68,
+      "difference": 0.25
     },
     {
       "hour": 9,
-      "tourA": 5.3,
-      "tourB": 5.29,
-      "difference": -0.01
+      "tourA": 5.29,
+      "tourB": 5.56,
+      "difference": 0.26
     },
     {
       "hour": 10,
-      "tourA": 5.39,
-      "tourB": 5.53,
-      "difference": 0.14
+      "tourA": 5.73,
+      "tourB": 5.81,
+      "difference": 0.08
     },
     {
       "hour": 11,
-      "tourA": 5.54,
-      "tourB": 5.59,
-      "difference": 0.05
+      "tourA": 5.66,
+      "tourB": 5.87,
+      "difference": 0.2
     },
     {
       "hour": 12,
-      "tourA": 4.81,
-      "tourB": 4.99,
-      "difference": 0.18
+      "tourA": 5.18,
+      "tourB": 5.4,
+      "difference": 0.22
     },
     {
       "hour": 13,
-      "tourA": 4.4,
-      "tourB": 4.64,
-      "difference": 0.24
+      "tourA": 4.68,
+      "tourB": 5.03,
+      "difference": 0.35
     },
     {
       "hour": 14,
-      "tourA": 4.91,
-      "tourB": 5.02,
-      "difference": 0.1
+      "tourA": 4.93,
+      "tourB": 5.31,
+      "difference": 0.38
     },
     {
       "hour": 15,
-      "tourA": 4.82,
-      "tourB": 4.93,
-      "difference": 0.12
+      "tourA": 4.8,
+      "tourB": 5.21,
+      "difference": 0.41
     },
     {
       "hour": 16,
       "tourA": 4.35,
-      "tourB": 4.35,
-      "difference": -0.0
+      "tourB": 4.68,
+      "difference": 0.33
     },
     {
       "hour": 17,
-      "tourA": 3.18,
-      "tourB": 3.09,
-      "difference": -0.09
+      "tourA": 3.38,
+      "tourB": 3.51,
+      "difference": 0.13
     },
     {
       "hour": 18,
-      "tourA": 2.77,
-      "tourB": 2.77,
-      "difference": 0.0
+      "tourA": 2.96,
+      "tourB": 3.09,
+      "difference": 0.14
     },
     {
       "hour": 19,
-      "tourA": 2.58,
-      "tourB": 2.61,
-      "difference": 0.03
+      "tourA": 2.74,
+      "tourB": 2.91,
+      "difference": 0.17
     },
     {
       "hour": 20,
-      "tourA": 2.48,
-      "tourB": 2.52,
-      "difference": 0.04
+      "tourA": 2.65,
+      "tourB": 2.84,
+      "difference": 0.19
     },
     {
       "hour": 21,
-      "tourA": 2.35,
-      "tourB": 2.44,
-      "difference": 0.09
+      "tourA": 2.53,
+      "tourB": 2.76,
+      "difference": 0.23
     },
     {
       "hour": 22,
-      "tourA": 2.29,
-      "tourB": 2.38,
-      "difference": 0.1
+      "tourA": 2.45,
+      "tourB": 2.7,
+      "difference": 0.25
     },
     {
       "hour": 23,
-      "tourA": 2.26,
-      "tourB": 2.34,
-      "difference": 0.08
+      "tourA": 2.41,
+      "tourB": 2.65,
+      "difference": 0.25
     }
   ],
   "weeklyData": [
     {
       "day": "Monday",
       "dayIndex": 0,
-      "tourA": 3.8,
-      "tourB": 3.87
+      "tourA": 3.85,
+      "tourB": 4.02
     },
     {
       "day": "Tuesday",
       "dayIndex": 1,
-      "tourA": 3.68,
-      "tourB": 4.0
+      "tourA": 3.96,
+      "tourB": 4.15
     },
     {
       "day": "Wednesday",
       "dayIndex": 2,
-      "tourA": 3.37,
-      "tourB": 3.43
+      "tourA": 3.66,
+      "tourB": 3.87
     },
     {
       "day": "Thursday",
       "dayIndex": 3,
-      "tourA": 3.69,
-      "tourB": 3.82
+      "tourA": 3.9,
+      "tourB": 4.26
     },
     {
       "day": "Friday",
       "dayIndex": 4,
-      "tourA": 3.48,
-      "tourB": 3.58
+      "tourA": 3.71,
+      "tourB": 4.06
     },
     {
       "day": "Saturday",
       "dayIndex": 5,
-      "tourA": 2.39,
-      "tourB": 2.49
+      "tourA": 2.43,
+      "tourB": 2.68
     },
     {
       "day": "Sunday",
       "dayIndex": 6,
-      "tourA": 2.2,
-      "tourB": 2.33
+      "tourA": 2.19,
+      "tourB": 2.53
     }
   ],
   "timeSeriesData": [
+    {
+      "date": "2023-09-01",
+      "tourA": 3.49,
+      "tourB": 4.43
+    },
+    {
+      "date": "2023-09-02",
+      "tourA": 2.43,
+      "tourB": 3.0
+    },
+    {
+      "date": "2023-09-03",
+      "tourA": 2.28,
+      "tourB": 2.89
+    },
+    {
+      "date": "2023-09-04",
+      "tourA": 3.69,
+      "tourB": 4.97
+    },
+    {
+      "date": "2023-09-05",
+      "tourA": 5.23,
+      "tourB": 5.34
+    },
+    {
+      "date": "2023-09-06",
+      "tourA": 4.31,
+      "tourB": 4.59
+    },
+    {
+      "date": "2023-09-07",
+      "tourA": 5.74,
+      "tourB": 5.33
+    },
+    {
+      "date": "2023-09-08",
+      "tourA": 5.19,
+      "tourB": 5.31
+    },
+    {
+      "date": "2023-09-09",
+      "tourA": 2.54,
+      "tourB": 3.05
+    },
+    {
+      "date": "2023-09-10",
+      "tourA": 2.19,
+      "tourB": 3.08
+    },
+    {
+      "date": "2023-09-11",
+      "tourA": 3.42,
+      "tourB": 5.15
+    },
+    {
+      "date": "2023-09-12",
+      "tourA": 3.57,
+      "tourB": 4.84
+    },
+    {
+      "date": "2023-09-13",
+      "tourA": 4.2,
+      "tourB": 4.53
+    },
+    {
+      "date": "2023-09-14",
+      "tourA": 5.17,
+      "tourB": 5.2
+    },
+    {
+      "date": "2023-09-15",
+      "tourA": 5.85,
+      "tourB": 5.38
+    },
+    {
+      "date": "2023-09-16",
+      "tourA": 3.04,
+      "tourB": 2.62
+    },
+    {
+      "date": "2023-09-17",
+      "tourA": 2.39,
+      "tourB": 2.46
+    },
+    {
+      "date": "2023-09-18",
+      "tourA": 4.19,
+      "tourB": 4.86
+    },
+    {
+      "date": "2023-09-19",
+      "tourA": 4.99,
+      "tourB": 5.52
+    },
+    {
+      "date": "2023-09-20",
+      "tourA": 4.63,
+      "tourB": 5.22
+    },
+    {
+      "date": "2023-09-21",
+      "tourA": 4.39,
+      "tourB": 5.85
+    },
+    {
+      "date": "2023-09-22",
+      "tourA": 4.8,
+      "tourB": 5.58
+    },
+    {
+      "date": "2023-09-23",
+      "tourA": 3.13,
+      "tourB": 3.43
+    },
+    {
+      "date": "2023-09-24",
+      "tourA": 2.83,
+      "tourB": 3.0
+    },
+    {
+      "date": "2023-09-25",
+      "tourA": 4.25,
+      "tourB": 5.13
+    },
+    {
+      "date": "2023-09-26",
+      "tourA": 4.83,
+      "tourB": 4.4
+    },
+    {
+      "date": "2023-09-27",
+      "tourA": 2.18,
+      "tourB": 2.58
+    },
+    {
+      "date": "2023-09-28",
+      "tourA": 4.26,
+      "tourB": 5.64
+    },
+    {
+      "date": "2023-09-29",
+      "tourA": 5.24,
+      "tourB": 5.07
+    },
+    {
+      "date": "2023-09-30",
+      "tourA": 2.66,
+      "tourB": 2.74
+    },
+    {
+      "date": "2023-10-01",
+      "tourA": 2.26,
+      "tourB": 2.67
+    },
+    {
+      "date": "2023-10-02",
+      "tourA": 4.4,
+      "tourB": 5.01
+    },
+    {
+      "date": "2023-10-03",
+      "tourA": 5.26,
+      "tourB": 4.59
+    },
+    {
+      "date": "2023-10-04",
+      "tourA": 5.82,
+      "tourB": 4.61
+    },
+    {
+      "date": "2023-10-05",
+      "tourA": 6.43,
+      "tourB": 5.5
+    },
+    {
+      "date": "2023-10-06",
+      "tourA": 5.55,
+      "tourB": 5.38
+    },
+    {
+      "date": "2023-10-07",
+      "tourA": 2.67,
+      "tourB": 3.0
+    },
+    {
+      "date": "2023-10-08",
+      "tourA": 2.1,
+      "tourB": 2.87
+    },
+    {
+      "date": "2023-10-09",
+      "tourA": 4.53,
+      "tourB": 4.61
+    },
+    {
+      "date": "2023-10-10",
+      "tourA": 5.06,
+      "tourB": 5.19
+    },
+    {
+      "date": "2023-10-11",
+      "tourA": 3.86,
+      "tourB": 4.67
+    },
+    {
+      "date": "2023-10-12",
+      "tourA": 5.07,
+      "tourB": 5.31
+    },
+    {
+      "date": "2023-10-13",
+      "tourA": 4.49,
+      "tourB": 5.19
+    },
+    {
+      "date": "2023-10-14",
+      "tourA": 2.34,
+      "tourB": 3.21
+    },
+    {
+      "date": "2023-10-15",
+      "tourA": 1.84,
+      "tourB": 3.06
+    },
+    {
+      "date": "2023-10-16",
+      "tourA": 4.56,
+      "tourB": 4.63
+    },
+    {
+      "date": "2023-10-17",
+      "tourA": 4.78,
+      "tourB": 4.62
+    },
+    {
+      "date": "2023-10-18",
+      "tourA": 3.62,
+      "tourB": 3.88
+    },
+    {
+      "date": "2023-10-19",
+      "tourA": 5.23,
+      "tourB": 5.26
+    },
+    {
+      "date": "2023-10-20",
+      "tourA": 4.68,
+      "tourB": 5.19
+    },
+    {
+      "date": "2023-10-21",
+      "tourA": 2.27,
+      "tourB": 2.65
+    },
+    {
+      "date": "2023-10-22",
+      "tourA": 1.92,
+      "tourB": 2.47
+    },
+    {
+      "date": "2023-10-23",
+      "tourA": 2.81,
+      "tourB": 3.52
+    },
+    {
+      "date": "2023-10-24",
+      "tourA": 3.05,
+      "tourB": 3.96
+    },
+    {
+      "date": "2023-10-25",
+      "tourA": 3.66,
+      "tourB": 3.95
+    },
+    {
+      "date": "2023-10-26",
+      "tourA": 3.94,
+      "tourB": 4.1
+    },
+    {
+      "date": "2023-10-27",
+      "tourA": 3.5,
+      "tourB": 4.15
+    },
+    {
+      "date": "2023-10-28",
+      "tourA": 2.01,
+      "tourB": 2.73
+    },
+    {
+      "date": "2023-10-29",
+      "tourA": 1.99,
+      "tourB": 2.65
+    },
+    {
+      "date": "2023-10-30",
+      "tourA": 4.66,
+      "tourB": 4.31
+    },
+    {
+      "date": "2023-10-31",
+      "tourA": 4.06,
+      "tourB": 4.9
+    },
     {
       "date": "2023-11-01",
       "tourA": 4.07,
@@ -234,12 +539,12 @@
     },
     {
       "date": "2023-11-02",
-      "tourA": 4.06,
+      "tourA": 5.11,
       "tourB": 4.28
     },
     {
       "date": "2023-11-03",
-      "tourA": 4.61,
+      "tourA": 4.92,
       "tourB": 4.27
     },
     {
@@ -254,12 +559,12 @@
     },
     {
       "date": "2023-11-06",
-      "tourA": 4.25,
+      "tourA": 5.02,
       "tourB": 4.94
     },
     {
       "date": "2023-11-07",
-      "tourA": 4.02,
+      "tourA": 4.16,
       "tourB": 5.42
     },
     {
@@ -269,7 +574,7 @@
     },
     {
       "date": "2023-11-09",
-      "tourA": 3.92,
+      "tourA": 3.99,
       "tourB": 5.09
     },
     {
@@ -294,7 +599,7 @@
     },
     {
       "date": "2023-11-14",
-      "tourA": 3.37,
+      "tourA": 4.15,
       "tourB": 4.21
     },
     {
@@ -309,7 +614,7 @@
     },
     {
       "date": "2023-11-17",
-      "tourA": 3.77,
+      "tourA": 4.31,
       "tourB": 3.95
     },
     {
@@ -340,11 +645,11 @@
     {
       "date": "2023-11-23",
       "tourA": 3.82,
-      "tourB": 5.09
+      "tourB": 5.25
     },
     {
       "date": "2023-11-24",
-      "tourA": 3.66,
+      "tourA": 3.73,
       "tourB": 4.45
     },
     {
@@ -365,7 +670,7 @@
     {
       "date": "2023-11-28",
       "tourA": 3.97,
-      "tourB": 5.39
+      "tourB": 5.47
     },
     {
       "date": "2023-11-29",
@@ -379,317 +684,317 @@
     },
     {
       "date": "2023-12-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.95,
+      "tourB": 4.6
     },
     {
       "date": "2023-12-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.99,
+      "tourB": 2.78
     },
     {
       "date": "2023-12-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.63,
+      "tourB": 2.22
     },
     {
       "date": "2023-12-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.45,
+      "tourB": 4.84
     },
     {
       "date": "2023-12-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.1,
+      "tourB": 6.16
     },
     {
       "date": "2023-12-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.02,
+      "tourB": 5.07
     },
     {
       "date": "2023-12-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.18,
+      "tourB": 6.29
     },
     {
       "date": "2023-12-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.37,
+      "tourB": 5.68
     },
     {
       "date": "2023-12-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.33,
+      "tourB": 3.29
     },
     {
       "date": "2023-12-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.48,
+      "tourB": 2.45
     },
     {
       "date": "2023-12-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.84,
+      "tourB": 5.44
     },
     {
       "date": "2023-12-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.26,
+      "tourB": 5.59
     },
     {
       "date": "2023-12-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.15,
+      "tourB": 3.54
     },
     {
       "date": "2023-12-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.49,
+      "tourB": 4.98
     },
     {
       "date": "2023-12-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.04,
+      "tourB": 4.66
     },
     {
       "date": "2023-12-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.54,
+      "tourB": 2.21
     },
     {
       "date": "2023-12-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 0.85,
+      "tourB": 1.8
     },
     {
       "date": "2023-12-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.94,
+      "tourB": 2.83
     },
     {
       "date": "2023-12-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.67,
+      "tourB": 3.12
     },
     {
       "date": "2023-12-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.95,
+      "tourB": 3.09
     },
     {
       "date": "2023-12-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.88,
+      "tourB": 3.06
     },
     {
       "date": "2023-12-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.96,
+      "tourB": 3.18
     },
     {
       "date": "2023-12-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.06,
+      "tourB": 2.01
     },
     {
       "date": "2023-12-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.65,
+      "tourB": 2.01
     },
     {
       "date": "2023-12-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.23,
+      "tourB": 2.58
     },
     {
       "date": "2023-12-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.84,
+      "tourB": 2.48
     },
     {
       "date": "2023-12-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.43,
+      "tourB": 2.64
     },
     {
       "date": "2023-12-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.76,
+      "tourB": 2.48
     },
     {
       "date": "2023-12-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.84,
+      "tourB": 2.6
     },
     {
       "date": "2023-12-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.55,
+      "tourB": 2.08
     },
     {
       "date": "2023-12-31",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.42,
+      "tourB": 2.04
     },
     {
       "date": "2024-01-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.42,
+      "tourB": 2.04
     },
     {
       "date": "2024-01-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.96,
+      "tourB": 4.01
     },
     {
       "date": "2024-01-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.66,
+      "tourB": 4.42
     },
     {
       "date": "2024-01-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.51,
+      "tourB": 4.17
     },
     {
       "date": "2024-01-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.15,
+      "tourB": 3.82
     },
     {
       "date": "2024-01-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.62,
+      "tourB": 2.43
     },
     {
       "date": "2024-01-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.64,
+      "tourB": 1.93
     },
     {
       "date": "2024-01-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.86,
+      "tourB": 4.71
     },
     {
       "date": "2024-01-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.1,
+      "tourB": 5.39
     },
     {
       "date": "2024-01-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.58,
+      "tourB": 5.78
     },
     {
       "date": "2024-01-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.5,
+      "tourB": 6.44
     },
     {
       "date": "2024-01-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.49,
+      "tourB": 4.66
     },
     {
       "date": "2024-01-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.33,
+      "tourB": 2.88
     },
     {
       "date": "2024-01-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.71,
+      "tourB": 2.16
     },
     {
       "date": "2024-01-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.36,
+      "tourB": 4.29
     },
     {
       "date": "2024-01-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.97,
+      "tourB": 4.9
     },
     {
       "date": "2024-01-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.94,
+      "tourB": 4.93
     },
     {
       "date": "2024-01-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.94,
+      "tourB": 5.03
     },
     {
       "date": "2024-01-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.86,
+      "tourB": 4.36
     },
     {
       "date": "2024-01-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.8,
+      "tourB": 3.26
     },
     {
       "date": "2024-01-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.72,
+      "tourB": 2.78
     },
     {
       "date": "2024-01-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.21,
+      "tourB": 5.22
     },
     {
       "date": "2024-01-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.7,
+      "tourB": 4.83
     },
     {
       "date": "2024-01-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.17,
+      "tourB": 4.7
     },
     {
       "date": "2024-01-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.24,
+      "tourB": 4.9
     },
     {
       "date": "2024-01-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.64,
+      "tourB": 4.33
     },
     {
       "date": "2024-01-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.39,
+      "tourB": 2.97
     },
     {
       "date": "2024-01-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.94,
+      "tourB": 2.67
     },
     {
       "date": "2024-01-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.44,
+      "tourB": 4.56
     },
     {
       "date": "2024-01-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.16,
+      "tourB": 4.37
     },
     {
       "date": "2024-01-31",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.72,
+      "tourB": 4.55
     },
     {
       "date": "2024-02-01",
-      "tourA": 4.12,
+      "tourA": 4.45,
       "tourB": 4.47
     },
     {
@@ -709,12 +1014,12 @@
     },
     {
       "date": "2024-02-05",
-      "tourA": 3.58,
+      "tourA": 4.49,
       "tourB": 4.01
     },
     {
       "date": "2024-02-06",
-      "tourA": 3.72,
+      "tourA": 3.86,
       "tourB": 4.2
     },
     {
@@ -724,7 +1029,7 @@
     },
     {
       "date": "2024-02-08",
-      "tourA": 4.09,
+      "tourA": 4.22,
       "tourB": 3.93
     },
     {
@@ -744,22 +1049,22 @@
     },
     {
       "date": "2024-02-12",
-      "tourA": 3.97,
+      "tourA": 4.72,
       "tourB": 4.5
     },
     {
       "date": "2024-02-13",
-      "tourA": 4.65,
+      "tourA": 5.18,
       "tourB": 4.24
     },
     {
       "date": "2024-02-14",
-      "tourA": 4.0,
+      "tourA": 4.41,
       "tourB": 4.25
     },
     {
       "date": "2024-02-15",
-      "tourA": 4.27,
+      "tourA": 4.53,
       "tourB": 4.36
     },
     {
@@ -779,7 +1084,7 @@
     },
     {
       "date": "2024-02-19",
-      "tourA": 4.1,
+      "tourA": 4.66,
       "tourB": 4.39
     },
     {
@@ -814,792 +1119,792 @@
     },
     {
       "date": "2024-02-26",
-      "tourA": 3.37,
+      "tourA": 4.59,
       "tourB": 4.41
     },
     {
       "date": "2024-02-27",
-      "tourA": 4.03,
+      "tourA": 4.3,
       "tourB": 4.02
     },
     {
       "date": "2024-02-28",
-      "tourA": 3.66,
+      "tourA": 4.06,
       "tourB": 4.22
     },
     {
       "date": "2024-02-29",
-      "tourA": 3.43,
+      "tourA": 4.19,
       "tourB": 4.3
     },
     {
       "date": "2024-03-01",
-      "tourA": 3.26,
+      "tourA": 4.21,
       "tourB": 4.01
     },
     {
       "date": "2024-03-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.9,
+      "tourB": 2.29
     },
     {
       "date": "2024-03-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.5,
+      "tourB": 2.12
     },
     {
       "date": "2024-03-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.91,
+      "tourB": 3.57
     },
     {
       "date": "2024-03-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.33,
+      "tourB": 3.56
     },
     {
       "date": "2024-03-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.02,
+      "tourB": 3.82
     },
     {
       "date": "2024-03-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.25,
+      "tourB": 3.94
     },
     {
       "date": "2024-03-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.85,
+      "tourB": 3.68
     },
     {
       "date": "2024-03-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.22,
+      "tourB": 2.69
     },
     {
       "date": "2024-03-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.0,
+      "tourB": 2.14
     },
     {
       "date": "2024-03-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.04,
+      "tourB": 3.63
     },
     {
       "date": "2024-03-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.73,
+      "tourB": 4.23
     },
     {
       "date": "2024-03-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.34,
+      "tourB": 3.36
     },
     {
       "date": "2024-03-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.14,
+      "tourB": 3.17
     },
     {
       "date": "2024-03-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.32,
+      "tourB": 3.15
     },
     {
       "date": "2024-03-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.22,
+      "tourB": 2.04
     },
     {
       "date": "2024-03-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.02,
+      "tourB": 1.97
     },
     {
       "date": "2024-03-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.6,
+      "tourB": 2.7
     },
     {
       "date": "2024-03-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.54,
+      "tourB": 2.82
     },
     {
       "date": "2024-03-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.97,
+      "tourB": 2.16
     },
     {
       "date": "2024-03-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.65,
+      "tourB": 2.86
     },
     {
       "date": "2024-03-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.57,
+      "tourB": 2.72
     },
     {
       "date": "2024-03-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.2,
+      "tourB": 2.05
     },
     {
       "date": "2024-03-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.96,
+      "tourB": 2.04
     },
     {
       "date": "2024-03-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.67,
+      "tourB": 2.72
     },
     {
       "date": "2024-03-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.55,
+      "tourB": 2.64
     },
     {
       "date": "2024-03-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.71,
+      "tourB": 2.69
     },
     {
       "date": "2024-03-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.51,
+      "tourB": 2.75
     },
     {
       "date": "2024-03-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.57,
+      "tourB": 2.56
     },
     {
       "date": "2024-03-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.92,
+      "tourB": 2.11
     },
     {
       "date": "2024-03-31",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.02,
+      "tourB": 2.12
     },
     {
       "date": "2024-04-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.82,
+      "tourB": 3.54
     },
     {
       "date": "2024-04-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.6,
+      "tourB": 3.68
     },
     {
       "date": "2024-04-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.93,
+      "tourB": 3.64
     },
     {
       "date": "2024-04-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.6,
+      "tourB": 3.91
     },
     {
       "date": "2024-04-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.06,
+      "tourB": 3.53
     },
     {
       "date": "2024-04-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.25,
+      "tourB": 2.26
     },
     {
       "date": "2024-04-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.02,
+      "tourB": 2.1
     },
     {
       "date": "2024-04-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.0,
+      "tourB": 2.56
     },
     {
       "date": "2024-04-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.75,
+      "tourB": 2.09
     },
     {
       "date": "2024-04-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.76,
+      "tourB": 2.1
     },
     {
       "date": "2024-04-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.8,
+      "tourB": 2.08
     },
     {
       "date": "2024-04-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.22,
+      "tourB": 2.71
     },
     {
       "date": "2024-04-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.84,
+      "tourB": 2.35
     },
     {
       "date": "2024-04-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.82,
+      "tourB": 2.1
     },
     {
       "date": "2024-04-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.51,
+      "tourB": 3.97
     },
     {
       "date": "2024-04-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.35,
+      "tourB": 4.13
     },
     {
       "date": "2024-04-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.59,
+      "tourB": 3.34
     },
     {
       "date": "2024-04-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.25,
+      "tourB": 3.93
     },
     {
       "date": "2024-04-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.33,
+      "tourB": 4.01
     },
     {
       "date": "2024-04-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.56,
+      "tourB": 2.98
     },
     {
       "date": "2024-04-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.86,
+      "tourB": 2.11
     },
     {
       "date": "2024-04-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.49,
+      "tourB": 4.04
     },
     {
       "date": "2024-04-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.6,
+      "tourB": 3.87
     },
     {
       "date": "2024-04-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.05,
+      "tourB": 3.77
     },
     {
       "date": "2024-04-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.67,
+      "tourB": 3.81
     },
     {
       "date": "2024-04-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.81,
+      "tourB": 4.02
     },
     {
       "date": "2024-04-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.19,
+      "tourB": 2.15
     },
     {
       "date": "2024-04-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.01,
+      "tourB": 2.12
     },
     {
       "date": "2024-04-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.61,
+      "tourB": 3.99
     },
     {
       "date": "2024-04-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.55,
+      "tourB": 4.21
     },
     {
       "date": "2024-05-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.05,
+      "tourB": 2.39
     },
     {
       "date": "2024-05-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.88,
+      "tourB": 4.07
     },
     {
       "date": "2024-05-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.51,
+      "tourB": 3.69
     },
     {
       "date": "2024-05-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.39,
+      "tourB": 2.43
     },
     {
       "date": "2024-05-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.32,
+      "tourB": 2.18
     },
     {
       "date": "2024-05-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.16,
+      "tourB": 4.35
     },
     {
       "date": "2024-05-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.07,
+      "tourB": 4.47
     },
     {
       "date": "2024-05-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.27,
+      "tourB": 3.56
     },
     {
       "date": "2024-05-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.6,
+      "tourB": 4.52
     },
     {
       "date": "2024-05-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.29,
+      "tourB": 4.24
     },
     {
       "date": "2024-05-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.14,
+      "tourB": 2.96
     },
     {
       "date": "2024-05-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.4,
+      "tourB": 3.83
     },
     {
       "date": "2024-05-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 6.37,
+      "tourB": 4.88
     },
     {
       "date": "2024-05-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 6.3,
+      "tourB": 5.29
     },
     {
       "date": "2024-05-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 6.92,
+      "tourB": 5.27
     },
     {
       "date": "2024-05-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 7.12,
+      "tourB": 5.29
     },
     {
       "date": "2024-05-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.09,
+      "tourB": 4.3
     },
     {
       "date": "2024-05-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.4,
+      "tourB": 3.84
     },
     {
       "date": "2024-05-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.14,
+      "tourB": 2.75
     },
     {
       "date": "2024-05-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.6,
+      "tourB": 3.58
     },
     {
       "date": "2024-05-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.49,
+      "tourB": 3.45
     },
     {
       "date": "2024-05-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.05,
+      "tourB": 3.33
     },
     {
       "date": "2024-05-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.78,
+      "tourB": 3.63
     },
     {
       "date": "2024-05-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.11,
+      "tourB": 3.47
     },
     {
       "date": "2024-05-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.77,
+      "tourB": 2.63
     },
     {
       "date": "2024-05-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.84,
+      "tourB": 2.59
     },
     {
       "date": "2024-05-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.55,
+      "tourB": 3.6
     },
     {
       "date": "2024-05-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.63,
+      "tourB": 3.7
     },
     {
       "date": "2024-05-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.97,
+      "tourB": 3.64
     },
     {
       "date": "2024-05-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.17,
+      "tourB": 3.64
     },
     {
       "date": "2024-05-31",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.08,
+      "tourB": 3.93
     },
     {
       "date": "2024-06-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.23,
+      "tourB": 2.98
     },
     {
       "date": "2024-06-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.83,
+      "tourB": 2.75
     },
     {
       "date": "2024-06-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.13,
+      "tourB": 3.6
     },
     {
       "date": "2024-06-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.54,
+      "tourB": 4.22
     },
     {
       "date": "2024-06-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.17,
+      "tourB": 4.49
     },
     {
       "date": "2024-06-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.87,
+      "tourB": 4.18
     },
     {
       "date": "2024-06-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.8,
+      "tourB": 3.85
     },
     {
       "date": "2024-06-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.71,
+      "tourB": 2.85
     },
     {
       "date": "2024-06-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.82,
+      "tourB": 2.7
     },
     {
       "date": "2024-06-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.33,
+      "tourB": 3.58
     },
     {
       "date": "2024-06-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.54,
+      "tourB": 3.67
     },
     {
       "date": "2024-06-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.59,
+      "tourB": 3.83
     },
     {
       "date": "2024-06-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.28,
+      "tourB": 3.68
     },
     {
       "date": "2024-06-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.1,
+      "tourB": 3.39
     },
     {
       "date": "2024-06-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.42,
+      "tourB": 2.8
     },
     {
       "date": "2024-06-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.45,
+      "tourB": 2.84
     },
     {
       "date": "2024-06-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.42,
+      "tourB": 2.8
     },
     {
       "date": "2024-06-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.18,
+      "tourB": 3.74
     },
     {
       "date": "2024-06-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.73,
+      "tourB": 3.84
     },
     {
       "date": "2024-06-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.2,
+      "tourB": 3.92
     },
     {
       "date": "2024-06-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.47,
+      "tourB": 4.35
     },
     {
       "date": "2024-06-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.98,
+      "tourB": 2.84
     },
     {
       "date": "2024-06-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.75,
+      "tourB": 2.78
     },
     {
       "date": "2024-06-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.12,
+      "tourB": 4.45
     },
     {
       "date": "2024-06-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.31,
+      "tourB": 4.42
     },
     {
       "date": "2024-06-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.75,
+      "tourB": 4.34
     },
     {
       "date": "2024-06-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.59,
+      "tourB": 5.32
     },
     {
       "date": "2024-06-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.24,
+      "tourB": 4.14
     },
     {
       "date": "2024-06-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.45,
+      "tourB": 3.2
     },
     {
       "date": "2024-06-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.96,
+      "tourB": 3.09
     },
     {
       "date": "2024-07-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.66,
+      "tourB": 4.36
     },
     {
       "date": "2024-07-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.6,
+      "tourB": 3.97
     },
     {
       "date": "2024-07-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.85,
+      "tourB": 3.68
     },
     {
       "date": "2024-07-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.67,
+      "tourB": 3.88
     },
     {
       "date": "2024-07-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.45,
+      "tourB": 4.11
     },
     {
       "date": "2024-07-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.48,
+      "tourB": 2.88
     },
     {
       "date": "2024-07-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.43,
+      "tourB": 2.92
     },
     {
       "date": "2024-07-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.31,
+      "tourB": 3.91
     },
     {
       "date": "2024-07-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.17,
+      "tourB": 4.32
     },
     {
       "date": "2024-07-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.46,
+      "tourB": 4.25
     },
     {
       "date": "2024-07-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.86,
+      "tourB": 4.08
     },
     {
       "date": "2024-07-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.35,
+      "tourB": 3.7
     },
     {
       "date": "2024-07-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.64,
+      "tourB": 2.33
     },
     {
       "date": "2024-07-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.39,
+      "tourB": 2.63
     },
     {
       "date": "2024-07-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.37,
+      "tourB": 3.42
     },
     {
       "date": "2024-07-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.63,
+      "tourB": 3.32
     },
     {
       "date": "2024-07-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.58,
+      "tourB": 3.49
     },
     {
       "date": "2024-07-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.34,
+      "tourB": 3.53
     },
     {
       "date": "2024-07-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.09,
+      "tourB": 3.5
     },
     {
       "date": "2024-07-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.54,
+      "tourB": 2.15
     },
     {
       "date": "2024-07-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.41,
+      "tourB": 2.77
     },
     {
       "date": "2024-07-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.36,
+      "tourB": 3.35
     },
     {
       "date": "2024-07-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.79,
+      "tourB": 3.4
     },
     {
       "date": "2024-07-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.03,
+      "tourB": 3.38
     },
     {
       "date": "2024-07-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.8,
+      "tourB": 2.94
     },
     {
       "date": "2024-07-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.95,
+      "tourB": 3.18
     },
     {
       "date": "2024-07-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.41,
+      "tourB": 2.83
     },
     {
       "date": "2024-07-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.39,
+      "tourB": 2.93
     },
     {
       "date": "2024-07-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.83,
+      "tourB": 2.88
     },
     {
       "date": "2024-07-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.81,
+      "tourB": 2.86
     },
     {
       "date": "2024-07-31",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.95,
+      "tourB": 2.88
     },
     {
       "date": "2024-08-01",
-      "tourA": 2.97,
+      "tourA": 3.24,
       "tourB": 3.05
     },
     {
@@ -1745,7 +2050,7 @@
     {
       "date": "2024-08-30",
       "tourA": 3.6,
-      "tourB": 3.78
+      "tourB": 3.9
     },
     {
       "date": "2024-08-31",
@@ -1754,613 +2059,613 @@
     },
     {
       "date": "2024-09-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.63,
+      "tourB": 5.81
     },
     {
       "date": "2024-09-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.81,
+      "tourB": 5.48
     },
     {
       "date": "2024-09-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.8,
+      "tourB": 3.18
     },
     {
       "date": "2024-09-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.2,
+      "tourB": 3.8
     },
     {
       "date": "2024-09-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.81,
+      "tourB": 5.76
     },
     {
       "date": "2024-09-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.08,
+      "tourB": 7.81
     },
     {
       "date": "2024-09-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.96,
+      "tourB": 3.26
     },
     {
       "date": "2024-09-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.9,
+      "tourB": 3.09
     },
     {
       "date": "2024-09-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.0,
+      "tourB": 4.47
     },
     {
       "date": "2024-09-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.73,
+      "tourB": 4.04
     },
     {
       "date": "2024-09-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.8,
+      "tourB": 7.37
     },
     {
       "date": "2024-09-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.63,
+      "tourB": 6.03
     },
     {
       "date": "2024-09-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.24,
+      "tourB": 5.16
     },
     {
       "date": "2024-09-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.75,
+      "tourB": 2.83
     },
     {
       "date": "2024-09-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.37,
+      "tourB": 2.71
     },
     {
       "date": "2024-09-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.51,
+      "tourB": 3.84
     },
     {
       "date": "2024-09-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.86,
+      "tourB": 5.38
     },
     {
       "date": "2024-09-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.66,
+      "tourB": 4.38
     },
     {
       "date": "2024-09-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.07,
+      "tourB": 4.96
     },
     {
       "date": "2024-09-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.05,
+      "tourB": 4.94
     },
     {
       "date": "2024-09-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.19,
+      "tourB": 2.45
     },
     {
       "date": "2024-09-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.2,
+      "tourB": 2.48
     },
     {
       "date": "2024-09-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.42,
+      "tourB": 5.57
     },
     {
       "date": "2024-09-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.53,
+      "tourB": 5.17
     },
     {
       "date": "2024-09-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.67,
+      "tourB": 4.05
     },
     {
       "date": "2024-09-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.53,
+      "tourB": 3.9
     },
     {
       "date": "2024-09-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.31,
+      "tourB": 4.47
     },
     {
       "date": "2024-09-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.68,
+      "tourB": 2.72
     },
     {
       "date": "2024-09-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.48,
+      "tourB": 2.46
     },
     {
       "date": "2024-09-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.98,
+      "tourB": 4.13
     },
     {
       "date": "2024-10-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.22,
+      "tourB": 4.04
     },
     {
       "date": "2024-10-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.96,
+      "tourB": 5.38
     },
     {
       "date": "2024-10-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.16,
+      "tourB": 3.5
     },
     {
       "date": "2024-10-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.39,
+      "tourB": 5.53
     },
     {
       "date": "2024-10-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.63,
+      "tourB": 2.69
     },
     {
       "date": "2024-10-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.76,
+      "tourB": 2.43
     },
     {
       "date": "2024-10-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.55,
+      "tourB": 3.96
     },
     {
       "date": "2024-10-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.45,
+      "tourB": 5.02
     },
     {
       "date": "2024-10-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.13,
+      "tourB": 5.31
     },
     {
       "date": "2024-10-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.98,
+      "tourB": 4.18
     },
     {
       "date": "2024-10-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.24,
+      "tourB": 5.14
     },
     {
       "date": "2024-10-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.64,
+      "tourB": 3.23
     },
     {
       "date": "2024-10-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.62,
+      "tourB": 2.92
     },
     {
       "date": "2024-10-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.64,
+      "tourB": 4.12
     },
     {
       "date": "2024-10-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.08,
+      "tourB": 3.01
     },
     {
       "date": "2024-10-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.18,
+      "tourB": 7.29
     },
     {
       "date": "2024-10-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.37,
+      "tourB": 6.79
     },
     {
       "date": "2024-10-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.19,
+      "tourB": 4.93
     },
     {
       "date": "2024-10-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.61,
+      "tourB": 3.37
     },
     {
       "date": "2024-10-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.11,
+      "tourB": 2.56
     },
     {
       "date": "2024-10-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.62,
+      "tourB": 3.89
     },
     {
       "date": "2024-10-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.13,
+      "tourB": 4.58
     },
     {
       "date": "2024-10-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.13,
+      "tourB": 4.11
     },
     {
       "date": "2024-10-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.13,
+      "tourB": 4.1
     },
     {
       "date": "2024-10-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.63,
+      "tourB": 4.59
     },
     {
       "date": "2024-10-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.74,
+      "tourB": 2.92
     },
     {
       "date": "2024-10-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.3,
+      "tourB": 2.38
     },
     {
       "date": "2024-10-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.48,
+      "tourB": 5.25
     },
     {
       "date": "2024-10-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.83,
+      "tourB": 5.87
     },
     {
       "date": "2024-10-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.33,
+      "tourB": 3.93
     },
     {
       "date": "2024-10-31",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.1,
+      "tourB": 5.22
     },
     {
       "date": "2024-11-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.95,
+      "tourB": 5.48
     },
     {
       "date": "2024-11-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.08,
+      "tourB": 3.22
     },
     {
       "date": "2024-11-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.44,
+      "tourB": 2.7
     },
     {
       "date": "2024-11-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.32,
+      "tourB": 5.44
     },
     {
       "date": "2024-11-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.17,
+      "tourB": 5.48
     },
     {
       "date": "2024-11-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.35,
+      "tourB": 4.89
     },
     {
       "date": "2024-11-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.05,
+      "tourB": 5.86
     },
     {
       "date": "2024-11-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.31,
+      "tourB": 4.89
     },
     {
       "date": "2024-11-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.7,
+      "tourB": 3.16
     },
     {
       "date": "2024-11-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.81,
+      "tourB": 2.88
     },
     {
       "date": "2024-11-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.56,
+      "tourB": 5.24
     },
     {
       "date": "2024-11-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.65,
+      "tourB": 5.12
     },
     {
       "date": "2024-11-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.58,
+      "tourB": 3.79
     },
     {
       "date": "2024-11-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.98,
+      "tourB": 5.1
     },
     {
       "date": "2024-11-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.5,
+      "tourB": 4.93
     },
     {
       "date": "2024-11-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.2,
+      "tourB": 3.28
     },
     {
       "date": "2024-11-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.08,
+      "tourB": 2.6
     },
     {
       "date": "2024-11-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.4,
+      "tourB": 4.89
     },
     {
       "date": "2024-11-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.12,
+      "tourB": 5.31
     },
     {
       "date": "2024-11-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.1,
+      "tourB": 4.92
     },
     {
       "date": "2024-11-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.12,
+      "tourB": 5.92
     },
     {
       "date": "2024-11-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.9,
+      "tourB": 4.62
     },
     {
       "date": "2024-11-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.22,
+      "tourB": 3.59
     },
     {
       "date": "2024-11-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.07,
+      "tourB": 2.6
     },
     {
       "date": "2024-11-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.13,
+      "tourB": 5.06
     },
     {
       "date": "2024-11-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.41,
+      "tourB": 5.46
     },
     {
       "date": "2024-11-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.18,
+      "tourB": 4.13
     },
     {
       "date": "2024-11-28",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.56,
+      "tourB": 5.2
     },
     {
       "date": "2024-11-29",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 5.03,
+      "tourB": 4.82
     },
     {
       "date": "2024-11-30",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.01,
+      "tourB": 3.18
     },
     {
       "date": "2024-12-01",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.78,
+      "tourB": 2.63
     },
     {
       "date": "2024-12-02",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.75,
+      "tourB": 5.01
     },
     {
       "date": "2024-12-03",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.43,
+      "tourB": 5.62
     },
     {
       "date": "2024-12-04",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.14,
+      "tourB": 5.53
     },
     {
       "date": "2024-12-05",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.32,
+      "tourB": 6.53
     },
     {
       "date": "2024-12-06",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.29,
+      "tourB": 5.56
     },
     {
       "date": "2024-12-07",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.14,
+      "tourB": 3.28
     },
     {
       "date": "2024-12-08",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 1.76,
+      "tourB": 2.62
     },
     {
       "date": "2024-12-09",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.02,
+      "tourB": 5.04
     },
     {
       "date": "2024-12-10",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.05,
+      "tourB": 5.68
     },
     {
       "date": "2024-12-11",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.01,
+      "tourB": 5.64
     },
     {
       "date": "2024-12-12",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.46,
+      "tourB": 6.16
     },
     {
       "date": "2024-12-13",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.27,
+      "tourB": 5.54
     },
     {
       "date": "2024-12-14",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.63,
+      "tourB": 2.9
     },
     {
       "date": "2024-12-15",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.19,
+      "tourB": 2.14
     },
     {
       "date": "2024-12-16",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.65,
+      "tourB": 4.52
     },
     {
       "date": "2024-12-17",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.69,
+      "tourB": 4.03
     },
     {
       "date": "2024-12-18",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.83,
+      "tourB": 6.2
     },
     {
       "date": "2024-12-19",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.01,
+      "tourB": 4.93
     },
     {
       "date": "2024-12-20",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.65,
+      "tourB": 4.42
     },
     {
       "date": "2024-12-21",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.42,
+      "tourB": 3.94
     },
     {
       "date": "2024-12-22",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.56,
+      "tourB": 5.31
     },
     {
       "date": "2024-12-23",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.69,
+      "tourB": 5.12
     },
     {
       "date": "2024-12-24",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.24,
+      "tourB": 4.13
     },
     {
       "date": "2024-12-25",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.16,
+      "tourB": 2.84
     },
     {
       "date": "2024-12-26",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.74,
+      "tourB": 3.57
     },
     {
       "date": "2024-12-27",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.06,
+      "tourB": 3.03
     },
     {
       "date": "2024-12-28",
       "tourA": 0,
-      "tourB": 0
+      "tourB": 1.28
     },
     {
       "date": "2024-12-29",
       "tourA": 0,
-      "tourB": 0
+      "tourB": 1.26
     },
     {
       "date": "2024-12-30",
       "tourA": 0,
-      "tourB": 0
+      "tourB": 1.8
     },
     {
       "date": "2024-12-31",
       "tourA": 0,
-      "tourB": 0
+      "tourB": 1.41
     },
     {
       "date": "2025-01-01",
@@ -2509,7 +2814,7 @@
     },
     {
       "date": "2025-01-30",
-      "tourA": 3.67,
+      "tourA": 3.96,
       "tourB": 3.85
     },
     {
@@ -2534,7 +2839,7 @@
     },
     {
       "date": "2025-02-04",
-      "tourA": 3.91,
+      "tourA": 4.17,
       "tourB": 4.84
     },
     {
@@ -2564,12 +2869,12 @@
     },
     {
       "date": "2025-02-10",
-      "tourA": 4.61,
+      "tourA": 4.79,
       "tourB": 4.39
     },
     {
       "date": "2025-02-11",
-      "tourA": 3.99,
+      "tourA": 4.32,
       "tourB": 4.2
     },
     {
@@ -2639,7 +2944,7 @@
     },
     {
       "date": "2025-02-25",
-      "tourA": 3.63,
+      "tourA": 4.04,
       "tourB": 4.38
     },
     {
@@ -2656,62 +2961,469 @@
       "date": "2025-02-28",
       "tourA": 3.5,
       "tourB": 3.84
+    },
+    {
+      "date": "2025-03-01",
+      "tourA": 2.02,
+      "tourB": 2.36
+    },
+    {
+      "date": "2025-03-02",
+      "tourA": 1.75,
+      "tourB": 2.04
+    },
+    {
+      "date": "2025-03-03",
+      "tourA": 2.74,
+      "tourB": 2.65
+    },
+    {
+      "date": "2025-03-04",
+      "tourA": 2.95,
+      "tourB": 3.06
+    },
+    {
+      "date": "2025-03-05",
+      "tourA": 3.13,
+      "tourB": 2.99
+    },
+    {
+      "date": "2025-03-06",
+      "tourA": 3.45,
+      "tourB": 3.2
+    },
+    {
+      "date": "2025-03-07",
+      "tourA": 2.96,
+      "tourB": 2.93
+    },
+    {
+      "date": "2025-03-08",
+      "tourA": 2.2,
+      "tourB": 2.03
+    },
+    {
+      "date": "2025-03-09",
+      "tourA": 2.25,
+      "tourB": 1.99
+    },
+    {
+      "date": "2025-03-10",
+      "tourA": 3.54,
+      "tourB": 3.69
+    },
+    {
+      "date": "2025-03-11",
+      "tourA": 3.31,
+      "tourB": 3.56
+    },
+    {
+      "date": "2025-03-12",
+      "tourA": 2.12,
+      "tourB": 2.93
+    },
+    {
+      "date": "2025-03-13",
+      "tourA": 3.03,
+      "tourB": 3.63
+    },
+    {
+      "date": "2025-03-14",
+      "tourA": 2.62,
+      "tourB": 3.34
+    },
+    {
+      "date": "2025-03-15",
+      "tourA": 1.64,
+      "tourB": 1.97
+    },
+    {
+      "date": "2025-03-16",
+      "tourA": 1.54,
+      "tourB": 1.84
+    },
+    {
+      "date": "2025-03-17",
+      "tourA": 3.1,
+      "tourB": 3.5
+    },
+    {
+      "date": "2025-03-18",
+      "tourA": 2.6,
+      "tourB": 3.88
+    },
+    {
+      "date": "2025-03-19",
+      "tourA": 2.23,
+      "tourB": 3.09
+    },
+    {
+      "date": "2025-03-20",
+      "tourA": 1.55,
+      "tourB": 2.01
+    },
+    {
+      "date": "2025-03-21",
+      "tourA": 1.99,
+      "tourB": 3.12
+    },
+    {
+      "date": "2025-03-22",
+      "tourA": 1.53,
+      "tourB": 2.25
+    },
+    {
+      "date": "2025-03-23",
+      "tourA": 1.52,
+      "tourB": 1.94
+    },
+    {
+      "date": "2025-03-24",
+      "tourA": 1.83,
+      "tourB": 2.97
+    },
+    {
+      "date": "2025-03-25",
+      "tourA": 1.79,
+      "tourB": 2.73
+    },
+    {
+      "date": "2025-03-26",
+      "tourA": 1.9,
+      "tourB": 3.07
+    },
+    {
+      "date": "2025-03-27",
+      "tourA": 1.76,
+      "tourB": 2.89
+    },
+    {
+      "date": "2025-03-28",
+      "tourA": 1.77,
+      "tourB": 2.5
+    },
+    {
+      "date": "2025-03-29",
+      "tourA": 1.63,
+      "tourB": 2.16
+    },
+    {
+      "date": "2025-03-30",
+      "tourA": 1.53,
+      "tourB": 2.05
+    },
+    {
+      "date": "2025-03-31",
+      "tourA": 1.53,
+      "tourB": 2.03
+    },
+    {
+      "date": "2025-04-01",
+      "tourA": 1.52,
+      "tourB": 2.03
+    },
+    {
+      "date": "2025-04-02",
+      "tourA": 1.8,
+      "tourB": 2.5
+    },
+    {
+      "date": "2025-04-03",
+      "tourA": 2.13,
+      "tourB": 2.51
+    },
+    {
+      "date": "2025-04-04",
+      "tourA": 2.26,
+      "tourB": 2.54
+    },
+    {
+      "date": "2025-04-05",
+      "tourA": 1.78,
+      "tourB": 2.15
+    },
+    {
+      "date": "2025-04-06",
+      "tourA": 1.51,
+      "tourB": 2.1
+    },
+    {
+      "date": "2025-04-07",
+      "tourA": 3.26,
+      "tourB": 3.45
+    },
+    {
+      "date": "2025-04-08",
+      "tourA": 4.03,
+      "tourB": 4.48
+    },
+    {
+      "date": "2025-04-09",
+      "tourA": 1.67,
+      "tourB": 2.63
+    },
+    {
+      "date": "2025-04-10",
+      "tourA": 3.69,
+      "tourB": 4.74
+    },
+    {
+      "date": "2025-04-11",
+      "tourA": 2.87,
+      "tourB": 4.41
+    },
+    {
+      "date": "2025-04-12",
+      "tourA": 1.88,
+      "tourB": 3.04
+    },
+    {
+      "date": "2025-04-13",
+      "tourA": 1.66,
+      "tourB": 2.51
+    },
+    {
+      "date": "2025-04-14",
+      "tourA": 4.26,
+      "tourB": 4.33
+    },
+    {
+      "date": "2025-04-15",
+      "tourA": 3.79,
+      "tourB": 4.23
+    },
+    {
+      "date": "2025-04-16",
+      "tourA": 3.54,
+      "tourB": 3.59
+    },
+    {
+      "date": "2025-04-17",
+      "tourA": 4.52,
+      "tourB": 4.71
+    },
+    {
+      "date": "2025-04-18",
+      "tourA": 3.34,
+      "tourB": 4.62
+    },
+    {
+      "date": "2025-04-19",
+      "tourA": 2.2,
+      "tourB": 2.99
+    },
+    {
+      "date": "2025-04-20",
+      "tourA": 1.99,
+      "tourB": 2.9
+    },
+    {
+      "date": "2025-04-21",
+      "tourA": 4.29,
+      "tourB": 4.03
+    },
+    {
+      "date": "2025-04-22",
+      "tourA": 3.68,
+      "tourB": 3.94
+    },
+    {
+      "date": "2025-04-23",
+      "tourA": 3.06,
+      "tourB": 4.05
+    },
+    {
+      "date": "2025-04-24",
+      "tourA": 3.81,
+      "tourB": 5.1
+    },
+    {
+      "date": "2025-04-25",
+      "tourA": 2.69,
+      "tourB": 4.56
+    },
+    {
+      "date": "2025-04-26",
+      "tourA": 1.74,
+      "tourB": 2.6
+    },
+    {
+      "date": "2025-04-27",
+      "tourA": 1.57,
+      "tourB": 2.47
+    },
+    {
+      "date": "2025-04-28",
+      "tourA": 3.98,
+      "tourB": 4.28
+    },
+    {
+      "date": "2025-04-29",
+      "tourA": 3.65,
+      "tourB": 4.45
+    },
+    {
+      "date": "2025-04-30",
+      "tourA": 2.8,
+      "tourB": 3.59
+    },
+    {
+      "date": "2025-05-01",
+      "tourA": 2.17,
+      "tourB": 3.82
+    },
+    {
+      "date": "2025-05-02",
+      "tourA": 3.83,
+      "tourB": 3.93
+    },
+    {
+      "date": "2025-05-03",
+      "tourA": 4.5,
+      "tourB": 2.54
+    },
+    {
+      "date": "2025-05-04",
+      "tourA": 3.87,
+      "tourB": 2.4
+    },
+    {
+      "date": "2025-05-05",
+      "tourA": 4.64,
+      "tourB": 4.79
+    },
+    {
+      "date": "2025-05-06",
+      "tourA": 3.58,
+      "tourB": 4.65
+    },
+    {
+      "date": "2025-05-07",
+      "tourA": 3.43,
+      "tourB": 3.59
+    },
+    {
+      "date": "2025-05-08",
+      "tourA": 3.73,
+      "tourB": 5.2
+    },
+    {
+      "date": "2025-05-09",
+      "tourA": 3.7,
+      "tourB": 4.46
+    },
+    {
+      "date": "2025-05-10",
+      "tourA": 2.8,
+      "tourB": 2.88
+    },
+    {
+      "date": "2025-05-11",
+      "tourA": 4.12,
+      "tourB": 3.95
+    },
+    {
+      "date": "2025-05-12",
+      "tourA": 5.95,
+      "tourB": 5.07
+    },
+    {
+      "date": "2025-05-13",
+      "tourA": 6.49,
+      "tourB": 4.34
+    },
+    {
+      "date": "2025-05-14",
+      "tourA": 7.38,
+      "tourB": 5.7
+    },
+    {
+      "date": "2025-05-15",
+      "tourA": 6.29,
+      "tourB": 5.55
+    },
+    {
+      "date": "2025-05-16",
+      "tourA": 3.38,
+      "tourB": 3.02
+    },
+    {
+      "date": "2025-05-17",
+      "tourA": 1.93,
+      "tourB": 2.81
+    },
+    {
+      "date": "2025-05-18",
+      "tourA": 1.66,
+      "tourB": 2.85
     }
   ],
   "monthlyData": [
     {
+      "month": "2023-09",
+      "monthName": "Sep 2023",
+      "tourA": 3.84,
+      "tourB": 4.37
+    },
+    {
+      "month": "2023-10",
+      "monthName": "Oct 2023",
+      "tourA": 3.75,
+      "tourB": 4.12
+    },
+    {
       "month": "2023-11",
       "monthName": "Nov 2023",
-      "tourA": 3.35,
+      "tourA": 3.49,
       "tourB": 3.92
     },
     {
       "month": "2023-12",
       "monthName": "Dec 2023",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 2.93,
+      "tourB": 3.48
     },
     {
       "month": "2024-01",
       "monthName": "Jan 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.33,
+      "tourB": 4.11
     },
     {
       "month": "2024-02",
       "monthName": "Feb 2024",
-      "tourA": 3.42,
+      "tourA": 3.66,
       "tourB": 3.73
     },
     {
       "month": "2024-03",
       "monthName": "Mar 2024",
-      "tourA": 3.26,
-      "tourB": 4.01
+      "tourA": 2.98,
+      "tourB": 2.89
     },
     {
       "month": "2024-04",
       "monthName": "Apr 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.2,
+      "tourB": 3.17
     },
     {
       "month": "2024-05",
       "monthName": "May 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.76,
+      "tourB": 3.73
     },
     {
       "month": "2024-06",
       "monthName": "Jun 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.26,
+      "tourB": 3.62
     },
     {
       "month": "2024-07",
       "monthName": "Jul 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.24,
+      "tourB": 3.35
     },
     {
       "month": "2024-08",
@@ -2722,74 +3434,92 @@
     {
       "month": "2024-09",
       "monthName": "Sep 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 4.03,
+      "tourB": 4.23
     },
     {
       "month": "2024-10",
       "monthName": "Oct 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.91,
+      "tourB": 4.17
     },
     {
       "month": "2024-11",
       "monthName": "Nov 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.76,
+      "tourB": 4.45
     },
     {
       "month": "2024-12",
       "monthName": "Dec 2024",
-      "tourA": 0,
-      "tourB": 0
+      "tourA": 3.49,
+      "tourB": 4.11
     },
     {
       "month": "2025-01",
       "monthName": "Jan 2025",
-      "tourA": 2.9,
+      "tourA": 2.95,
       "tourB": 2.49
     },
     {
       "month": "2025-02",
       "monthName": "Feb 2025",
-      "tourA": 3.33,
+      "tourA": 3.37,
       "tourB": 3.45
+    },
+    {
+      "month": "2025-03",
+      "monthName": "Mar 2025",
+      "tourA": 2.24,
+      "tourB": 2.72
+    },
+    {
+      "month": "2025-04",
+      "monthName": "Apr 2025",
+      "tourA": 2.83,
+      "tourB": 3.52
+    },
+    {
+      "month": "2025-05",
+      "monthName": "May 2025",
+      "tourA": 4.07,
+      "tourB": 3.97
     }
   ],
   "keyInsights": [
     {
       "title": "Energy Efficiency",
-      "value": "4.3%",
-      "description": "Tour A uses 4.3% less power on average",
+      "value": "8.0%",
+      "description": "Tour A uses 8.0% less power on average",
       "icon": "\u26a1"
     },
     {
       "title": "Peak Hour",
-      "value": "11:00 / 11:00",
-      "description": "Tour A peaks at 11:00, Tour B at 11:00",
+      "value": "10:00 / 11:00",
+      "description": "Tour A peaks at 10:00, Tour B at 11:00",
       "icon": "\ud83d\udcc8"
     },
     {
       "title": "Weekend Savings",
-      "value": "36%",
-      "description": "Average weekend consumption drop (A: 36%, B: 35%)",
+      "value": "38%",
+      "description": "Average weekend consumption drop (A: 39%, B: 36%)",
       "icon": "\ud83d\udcc5"
     },
     {
       "title": "Monthly Usage",
-      "value": "~4.8 MWh",
+      "value": "~5.1 MWh",
       "description": "Combined monthly consumption estimate",
       "icon": "\ud83d\udd0c"
     },
     {
       "title": "Load Factor",
-      "value": "0.33 / 0.27",
+      "value": "0.28 / 0.21",
       "description": "Load factor comparison (A / B). Higher is better.",
       "icon": "\ud83d\udcca"
     },
     {
       "title": "Data Coverage",
-      "value": "81% / 99%",
+      "value": "93% / 98%",
       "description": "Available data percentage for Tour A / Tour B",
       "icon": "\ud83d\udcc1"
     }

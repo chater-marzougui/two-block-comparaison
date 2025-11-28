@@ -80,7 +80,7 @@ const MonthlyChart: React.FC = () => {
             yAxisId="power"
             dataKey="tourA" 
             name="Tour A (Avg Power)" 
-            fill="#FF6B6B" 
+            fill="#ef4444" 
             radius={[4, 4, 0, 0]}
             animationDuration={1500}
           />
@@ -88,7 +88,7 @@ const MonthlyChart: React.FC = () => {
             yAxisId="power"
             dataKey="tourB" 
             name="Tour B (Avg Power)" 
-            fill="#4ECDC4" 
+            fill="#10b981" 
             radius={[4, 4, 0, 0]}
             animationDuration={1500}
             animationBegin={300}
@@ -98,9 +98,9 @@ const MonthlyChart: React.FC = () => {
             type="monotone" 
             dataKey="tourAEnergy" 
             name="Tour A Energy" 
-            stroke="#c44" 
+            stroke="#b91c1c" 
             strokeWidth={2}
-            dot={{ fill: '#c44', strokeWidth: 2 }}
+            dot={{ fill: '#b91c1c', strokeWidth: 2 }}
             animationDuration={2000}
           />
           <Line 
@@ -108,9 +108,9 @@ const MonthlyChart: React.FC = () => {
             type="monotone" 
             dataKey="tourBEnergy" 
             name="Tour B Energy" 
-            stroke="#2a9d8f" 
+            stroke="#047857" 
             strokeWidth={2}
-            dot={{ fill: '#2a9d8f', strokeWidth: 2 }}
+            dot={{ fill: '#047857', strokeWidth: 2 }}
             animationDuration={2000}
             animationBegin={500}
           />

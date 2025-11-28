@@ -10,8 +10,6 @@ Date: November 2024
 
 import os
 import re
-import json
-from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
@@ -367,8 +365,8 @@ def get_monthly_data():
     filtered_a = power_a[mask]
     filtered_b = power_b[mask]
 
-    monthly_a = filtered_a.resample('M').mean()
-    monthly_b = filtered_b.resample('M').mean()
+    monthly_a = filtered_a.resample('Me').mean()
+    monthly_b = filtered_b.resample('Me').mean()
 
     all_months = monthly_a.index.union(monthly_b.index)
     monthly_data = []
@@ -591,7 +589,6 @@ def get_heatmap_data():
 
 
 if __name__ == '__main__':
-    import os
     # Preload data on startup
     print("Loading data...")
     load_all_data()

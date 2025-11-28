@@ -620,6 +620,10 @@ def main():
         print("Error: No data could be loaded!")
         return
     
+    # Sort and Clean
+    df = df[df.index.notna()]
+    df = df.sort_index()
+    
     print(f"Date range: {df.index.min()} to {df.index.max()}")
     
     # Get power columns

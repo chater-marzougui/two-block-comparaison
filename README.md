@@ -165,10 +165,6 @@ XLSX files from the data concentrator have numeric suffixes in column names (e.g
 - Outliers above 50 kW are automatically filtered
 - Time entries with `24:00:00` are excluded (invalid format)
 
-## 📝 License
-
-This project is part of the SInERT data analysis initiative.
-
 ## 🤝 Contributing
 
 Feel free to submit issues and pull requests for improvements.

@@ -64,20 +64,20 @@ const TimeSeriesChart: React.FC = () => {
             type="monotone" 
             dataKey="tourA" 
             name="Tour A" 
-            stroke="#FF6B6B" 
+            stroke="#ef4444" 
             strokeWidth={2}
-            dot={{ fill: '#FF6B6B', strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 6, fill: '#FF6B6B' }}
+            dot={{ fill: '#ef4444', strokeWidth: 2, r: 3 }}
+            activeDot={{ r: 6, fill: '#ef4444' }}
             animationDuration={2000}
           />
           <Line 
             type="monotone" 
             dataKey="tourB" 
             name="Tour B" 
-            stroke="#4ECDC4" 
+            stroke="#10b981" 
             strokeWidth={2}
-            dot={{ fill: '#4ECDC4', strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 6, fill: '#4ECDC4' }}
+            dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
+            activeDot={{ r: 6, fill: '#10b981' }}
             animationDuration={2000}
             animationBegin={500}
           />

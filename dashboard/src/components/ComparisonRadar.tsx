@@ -82,13 +82,13 @@ const ComparisonRadar: React.FC = () => {
           <Legend />
           <Bar 
             dataKey="Tour A" 
-            fill="#FF6B6B" 
+            fill="#ef4444" 
             radius={[0, 4, 4, 0]}
             animationDuration={1500}
           />
           <Bar 
             dataKey="Tour B" 
-            fill="#4ECDC4" 
+            fill="#10b981" 
             radius={[0, 4, 4, 0]}
             animationDuration={1500}
             animationBegin={300}

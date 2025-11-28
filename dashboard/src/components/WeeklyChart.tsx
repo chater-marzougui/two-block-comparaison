@@ -53,14 +53,14 @@ const WeeklyChart: React.FC = () => {
           <Bar 
             dataKey="tourA" 
             name="Tour A" 
-            fill="#FF6B6B" 
+            fill="#ef4444" 
             radius={[8, 8, 0, 0]}
             animationDuration={1500}
           />
           <Bar 
             dataKey="tourB" 
             name="Tour B" 
-            fill="#4ECDC4" 
+            fill="#10b981" 
             radius={[8, 8, 0, 0]}
             animationDuration={1500}
             animationBegin={300}

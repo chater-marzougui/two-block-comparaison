@@ -895,15 +895,9 @@ def main():
         print("Error: No data could be loaded!")
         return
 
-    bad_idx = [i for i in df.index if not isinstance(i, pd.Timestamp)]
-
-    print("\n========= BAD INDEX VALUES DETECTED =========")
-    for v in bad_idx[:5]:
-        print(repr(v))
-    print(f"... total bad indexes: {len(bad_idx)}")
-    print("=============================================\n")
-    
+    # Sort by index and drop rows with NaT in index
     df = df[df.index.notna()]
+    df = df.sort_index()
 
     
     print(f"Data loaded: {len(df)} records, {len(df.columns)} columns")
