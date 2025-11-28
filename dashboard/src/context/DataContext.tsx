@@ -132,10 +132,14 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         error: null,
       });
     } catch (err) {
+      const errorMessage = err instanceof Error 
+        ? `Failed to fetch data: ${err.message}` 
+        : 'Failed to connect to API server';
+      console.error('Data fetch error:', err);
       setData(prev => ({
         ...prev,
         loading: false,
-        error: err instanceof Error ? err.message : 'An error occurred',
+        error: errorMessage,
       }));
     }
   }, [filters]);

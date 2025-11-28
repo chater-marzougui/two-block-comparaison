@@ -21,9 +21,12 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
 
 # Constants
+# Data is recorded at 15-minute intervals (4 readings per hour)
 READINGS_PER_DAY = 24 * 4  # 96 readings per day (15-minute intervals)
+INTERVAL_HOURS = 0.25  # Each reading represents 15 minutes = 0.25 hours
 TOUR_A_COLOR = '#FF6B6B'
 TOUR_B_COLOR = '#4ECDC4'
+# Maximum expected power for these buildings (kW). Values above this are treated as outliers.
 MAX_POWER_CAP = 50  # kW cap for outlier removal
 
 
@@ -588,8 +591,11 @@ def get_heatmap_data():
 
 
 if __name__ == '__main__':
+    import os
     # Preload data on startup
     print("Loading data...")
     load_all_data()
     print("Starting Flask server...")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Only enable debug mode if explicitly set via environment variable
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(host='0.0.0.0', port=5000, debug=debug_mode)
