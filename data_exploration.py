@@ -15,12 +15,10 @@ Date: November 2024
 """
 
 import os
-import glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -47,7 +45,7 @@ def get_csv_files(data_dir):
     csv_files = []
     for root, dirs, files in os.walk(data_dir):
         for file in files:
-            if file.endswith('.csv'):
+            if file.endswith('.csv') or file.endswith('.xlsx'):
                 csv_files.append(os.path.join(root, file))
     return sorted(csv_files)
 
@@ -63,9 +61,20 @@ def load_single_csv(file_path):
         DataFrame with parsed data
     """
     try:
-        df = pd.read_csv(file_path, sep=';', low_memory=False)
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path, sep=';', low_memory=False)
+        elif file_path.endswith('.xlsx'):
+            df = pd.read_excel(file_path)
+            # convert Date column from yyyy-mm-dd hh:mm:ss to dd-mm-yyyy
+            if 'Date' in df.columns and 'Time' in df.columns:
+                df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%d-%m-%Y')
+        else:
+            print(f"❌ Unsupported file type: {file_path}")
+            return None
         # Convert date and time columns
         if 'Date' in df.columns and 'Time' in df.columns:
+            mask = ~(df['Time'] == '24:00:00')
+            df = df[mask]
             df['Datetime'] = pd.to_datetime(
                 df['Date'] + ' ' + df['Time'], 
                 format='%d-%m-%Y %H:%M:%S',
@@ -80,15 +89,6 @@ def load_single_csv(file_path):
 
 
 def load_all_data(data_dir):
-    """
-    Load all CSV files from the data directory and combine them.
-    
-    Args:
-        data_dir: Path to the SINERT_DATA_CONCENTRATOR directory
-        
-    Returns:
-        Combined DataFrame with all data
-    """
     csv_files = get_csv_files(data_dir)
     print(f"Found {len(csv_files)} CSV files")
     
@@ -96,15 +96,31 @@ def load_all_data(data_dir):
     for file_path in csv_files:
         df = load_single_csv(file_path)
         if df is not None:
+            nat_count = df.index.isna().sum()
+            if nat_count > 0:
+                print(f"{file_path} has {nat_count} NaT rows")
+
+            bad_index_values = []
+            for idx in df.index:
+                try:
+                    pd.to_datetime(idx, errors='raise')
+                except:
+                    bad_index_values.append(idx)
+
+            if bad_index_values:
+                print(f"\n⚠️  Bad index values in {file_path}:")
+                for v in bad_index_values[:20]:
+                    print(f"   {repr(v)}")
+                if len(bad_index_values) > 20:
+                    print(f"   ... and {len(bad_index_values)-20} more")
+
             all_data.append(df)
-            
+
     if all_data:
         combined_df = pd.concat(all_data, ignore_index=False)
-        combined_df = combined_df.sort_index()
-        # Remove duplicate timestamps
-        combined_df = combined_df[~combined_df.index.duplicated(keep='first')]
-        print(f"Total records loaded: {len(combined_df)}")
+        print(f"Total records loaded before fixing index: {len(combined_df)}")
         return combined_df
+
     return None
 
 
@@ -852,6 +868,17 @@ def main():
     if df is None or len(df) == 0:
         print("Error: No data could be loaded!")
         return
+
+    bad_idx = [i for i in df.index if not isinstance(i, pd.Timestamp)]
+
+    print("\n========= BAD INDEX VALUES DETECTED =========")
+    for v in bad_idx[:5]:
+        print(repr(v))
+    print(f"... total bad indexes: {len(bad_idx)}")
+    print("=============================================\n")
+    
+    df = df[df.index.notna()]
+
     
     print(f"Data loaded: {len(df)} records, {len(df.columns)} columns")
     print(f"Date range: {df.index.min()} to {df.index.max()}")

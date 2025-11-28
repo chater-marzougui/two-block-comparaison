@@ -1,9 +1,7 @@
 April2024
 April2025
-August2024
 December2023
 December2024
-February2024
 January2024
 July2024
 June2024
@@ -11,7 +9,6 @@ March2024
 March2025
 May2024
 May2025
-November2023
 November2024
 October2023
 October2024
@@ -21,7 +18,6 @@ September2024
 # Data exploration output files (large processed data)
 exploration_output/tour_a_processed.csv
 exploration_output/tour_b_processed.csv
-exploration_output/*.csv
 
 # Python cache
 __pycache__/
