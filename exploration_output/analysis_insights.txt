@@ -3,40 +3,40 @@ COMPARATIVE ANALYSIS INSIGHTS: TOUR A vs TOUR B
 ============================================================
 
 0. DATA AVAILABILITY STATUS:
-   - Tour A: Data available (4.5% coverage)
-   - Tour B: Data available (4.5% coverage)
+   - Tour A: Data available (83.0% coverage)
+   - Tour B: Data available (99.4% coverage)
 
 1. AVERAGE POWER CONSUMPTION:
-   - Tour A: 3.51 kW
-   - Tour B: 3.97 kW
-   - Difference: Tour B uses 13.0% more power than Tour A
+   - Tour A: 3.38 kW
+   - Tour B: 3.47 kW
+   - Difference: Tour B uses 2.6% more power than Tour A
 
 2. PEAK POWER CONSUMPTION:
-   - Tour A peak: 12.28 kW
-   - Tour B peak: 12.80 kW
+   - Tour A peak: 14.00 kW
+   - Tour B peak: 70.60 kW
    - Tour B has higher peak demand
 
 3. POWER FACTOR (EFFICIENCY INDICATOR):
-   - Tour A: 0.894
-   - Tour B: -0.760
+   - Tour A: 0.949
+   - Tour B: -0.825
    - Tour A has better power factor
 
 4. WEEKDAY vs WEEKEND PATTERNS:
    Tour A:
-      - Weekday avg: 4.01 kW
-      - Weekend avg: 2.01 kW
+      - Weekday avg: 3.80 kW
+      - Weekend avg: 2.29 kW
    Tour B:
-      - Weekday avg: 4.41 kW
-      - Weekend avg: 2.63 kW
-      - Tour B weekday consumption is 68.1% higher than weekend
+      - Weekday avg: 3.81 kW
+      - Weekend avg: 2.57 kW
+      - Tour B weekday consumption is 48.4% higher than weekend
 
 5. ENERGY EFFICIENCY SUMMARY:
    - Tour A is more energy efficient based on average consumption
 
 6. KEY FINDINGS:
-   - Tour B estimated daily consumption: 95.2 kWh
-   - Tour B estimated monthly consumption: 2856.3 kWh
-   - Tour B peak consumption hour: 11:00 (7.28 kW)
-   - Tour B minimum consumption hour: 3:00 (2.40 kW)
+   - Tour B estimated daily consumption: 83.3 kWh
+   - Tour B estimated monthly consumption: 2498.8 kWh
+   - Tour B peak consumption hour: 11:00 (5.95 kW)
+   - Tour B minimum consumption hour: 3:00 (2.28 kW)
 
 ============================================================

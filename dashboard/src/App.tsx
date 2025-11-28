@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import './App.css';
+import { DataProvider, useData } from './context/DataContext';
+import FilterPanel from './components/FilterPanel';
 import StatCard from './components/StatCard';
 import HourlyChart from './components/HourlyChart';
 import TimeSeriesChart from './components/TimeSeriesChart';
@@ -8,11 +10,29 @@ import WeeklyChart from './components/WeeklyChart';
 import ComparisonRadar from './components/ComparisonRadar';
 import InsightCards from './components/InsightCards';
 import TourComparison from './components/TourComparison';
-import { tourSummary } from './data/powerData';
+import MonthlyChart from './components/MonthlyChart';
+import EfficiencyMetrics from './components/EfficiencyMetrics';
 
-function App() {
-  const tourA = tourSummary[0];
-  const tourB = tourSummary[1];
+// Fallback to static data if API is not available
+import { tourSummary as staticTourSummary } from './data/powerData';
+
+function Dashboard() {
+  const { tourA, tourB, dataInfo, error } = useData();
+
+  // Use API data or fallback to static data
+  const tourAData = tourA || staticTourSummary[0];
+  const tourBData = tourB || staticTourSummary[1];
+  
+  // Calculate efficiency difference
+  const efficiencyDiff = tourAData.avgPower > 0 
+    ? Math.abs(((tourAData.avgPower - tourBData.avgPower) / tourAData.avgPower) * 100)
+    : 0;
+  const moreEfficient = tourAData.avgPower < tourBData.avgPower ? 'Tour A' : 'Tour B';
+
+  // Get date range
+  const dateRange = dataInfo?.dateRange 
+    ? `${new Date(dataInfo.dateRange.start).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${new Date(dataInfo.dateRange.end).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
+    : 'Nov 2023 - Feb 2025';
 
   return (
     <div className="App">
@@ -37,16 +57,29 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          Tour A vs Tour B Comparative Analysis | Jan-Feb 2025
+          Tour A vs Tour B Comparative Analysis | {dateRange}
         </motion.p>
       </motion.header>
+
+      {/* Filter Panel */}
+      <section className="filter-section">
+        <FilterPanel />
+      </section>
+
+      {/* Error Message */}
+      {error && (
+        <div className="error-message">
+          <p>⚠️ {error}</p>
+          <p className="error-note">Using cached data. Make sure the Flask backend is running.</p>
+        </div>
+      )}
 
       {/* Main Stats */}
       <section className="stats-section">
         <div className="stats-grid">
           <StatCard
             title="Tour A Average"
-            value={`${tourA.avgPower} kW`}
+            value={`${tourAData.avgPower} kW`}
             subtitle="Power consumption"
             icon="🏢"
             color="#FF6B6B"
@@ -54,27 +87,43 @@ function App() {
           />
           <StatCard
             title="Tour B Average"
-            value={`${tourB.avgPower} kW`}
+            value={`${tourBData.avgPower} kW`}
             subtitle="Power consumption"
             icon="🏬"
             color="#4ECDC4"
             delay={0.2}
           />
           <StatCard
-            title="Efficiency Gain"
-            value="10.6%"
-            subtitle="Tour B more efficient"
+            title="Efficiency Comparison"
+            value={`${efficiencyDiff.toFixed(1)}%`}
+            subtitle={`${moreEfficient} more efficient`}
             icon="📉"
             color="#45B7D1"
             delay={0.3}
           />
           <StatCard
             title="Peak Power"
-            value={`~${Math.max(tourA.maxPower, tourB.maxPower).toFixed(1)} kW`}
+            value={`~${Math.max(tourAData.maxPower, tourBData.maxPower).toFixed(1)} kW`}
             subtitle="Maximum recorded"
             icon="⚡"
             color="#96CEB4"
             delay={0.4}
+          />
+          <StatCard
+            title="Load Factor A"
+            value={tourAData.loadFactor?.toFixed(3) || '0.000'}
+            subtitle="Capacity utilization"
+            icon="📊"
+            color="#9B59B6"
+            delay={0.5}
+          />
+          <StatCard
+            title="Load Factor B"
+            value={tourBData.loadFactor?.toFixed(3) || '0.000'}
+            subtitle="Capacity utilization"
+            icon="📊"
+            color="#3498DB"
+            delay={0.6}
           />
         </div>
       </section>
@@ -92,9 +141,19 @@ function App() {
         </div>
       </section>
 
+      {/* Monthly Trends */}
+      <section className="monthly-section">
+        <MonthlyChart />
+      </section>
+
       {/* Time Series */}
       <section className="timeseries-section">
         <TimeSeriesChart />
+      </section>
+
+      {/* Efficiency Metrics */}
+      <section className="efficiency-section">
+        <EfficiencyMetrics />
       </section>
 
       {/* Comparison Section */}
@@ -113,9 +172,17 @@ function App() {
         transition={{ delay: 1.2, duration: 0.6 }}
       >
         <p>SInERT Project - Power Consumption Analysis Dashboard</p>
-        <p className="footer-note">Data from January - February 2025</p>
+        <p className="footer-note">Data from {dateRange}</p>
       </motion.footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <DataProvider>
+      <Dashboard />
+    </DataProvider>
   );
 }
 
