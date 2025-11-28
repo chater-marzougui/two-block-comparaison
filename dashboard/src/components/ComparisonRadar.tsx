@@ -10,11 +10,14 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { tourSummary } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const ComparisonRadar: React.FC = () => {
-  const tourA = tourSummary[0];
-  const tourB = tourSummary[1];
+  const { tourA, tourB, loading, error } = useData();
+
+  if (loading || error || !tourA || !tourB) {
+    return null;
+  }
 
   // Comparison data for grouped bar chart
   const comparisonData = [

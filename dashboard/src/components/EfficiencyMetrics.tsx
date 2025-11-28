@@ -11,11 +11,14 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { tourSummary } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const EfficiencyMetrics: React.FC = () => {
-  const tourA = tourSummary[0];
-  const tourB = tourSummary[1];
+  const { tourA, tourB, loading, error } = useData();
+
+  if (loading || error || !tourA || !tourB) {
+    return null;
+  }
 
   const loadFactorData = [
     { name: 'Tour A', value: tourA.loadFactor, fill: '#FF6B6B' },

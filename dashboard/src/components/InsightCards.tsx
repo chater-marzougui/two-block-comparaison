@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { keyInsights } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const InsightCards: React.FC = () => {
+  const { insights, loading, error } = useData();
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -25,6 +27,10 @@ const InsightCards: React.FC = () => {
     }
   };
 
+  if (loading || error || insights.length === 0) {
+    return null;
+  }
+
   return (
     <motion.div
       className="insights-container"
@@ -34,7 +40,7 @@ const InsightCards: React.FC = () => {
     >
       <h2 className="section-title">🔍 Key Insights</h2>
       <div className="insights-grid">
-        {keyInsights.map((insight, index) => (
+        {insights.map((insight, index) => (
           <motion.div
             key={insight.title}
             className="insight-card"

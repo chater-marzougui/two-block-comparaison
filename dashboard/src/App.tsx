@@ -13,26 +13,76 @@ import TourComparison from './components/TourComparison';
 import MonthlyChart from './components/MonthlyChart';
 import EfficiencyMetrics from './components/EfficiencyMetrics';
 
-// Fallback to static data if API is not available
-import { tourSummary as staticTourSummary } from './data/powerData';
-
 function Dashboard() {
-  const { tourA, tourB, dataInfo, error } = useData();
+  const { tourA, tourB, dataInfo, error, loading } = useData();
 
-  // Use API data or fallback to static data
-  const tourAData = tourA || staticTourSummary[0];
-  const tourBData = tourB || staticTourSummary[1];
-  
+  // If there's an error or still loading, show appropriate state
+  if (loading) {
+    return (
+      <div className="App">
+        <motion.header 
+          className="header"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.h1 
+            className="main-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            ⚡ Power Consumption Dashboard
+          </motion.h1>
+        </motion.header>
+        <div className="loading-container">
+          <div className="loading-spinner">⏳</div>
+          <p>Loading data from server...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If there's an error (backend not available), show error state
+  if (error || !tourA || !tourB) {
+    return (
+      <div className="App">
+        <motion.header 
+          className="header"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.h1 
+            className="main-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            ⚡ Power Consumption Dashboard
+          </motion.h1>
+        </motion.header>
+        <div className="error-container">
+          <div className="error-icon">⚠️</div>
+          <h2>Unable to Connect to Server</h2>
+          <p>{error || 'No data available'}</p>
+          <p className="error-note">Please make sure the Flask backend is running on port 5000.</p>
+          <code>cd backend && python app.py</code>
+        </div>
+      </div>
+    );
+  }
+
   // Calculate efficiency difference
-  const efficiencyDiff = tourAData.avgPower > 0 
-    ? Math.abs(((tourAData.avgPower - tourBData.avgPower) / tourAData.avgPower) * 100)
+  const efficiencyDiff = tourA.avgPower > 0 
+    ? Math.abs(((tourA.avgPower - tourB.avgPower) / tourA.avgPower) * 100)
     : 0;
-  const moreEfficient = tourAData.avgPower < tourBData.avgPower ? 'Tour A' : 'Tour B';
+  const moreEfficient = tourA.avgPower < tourB.avgPower ? 'Tour A' : 'Tour B';
 
   // Get date range
   const dateRange = dataInfo?.dateRange 
     ? `${new Date(dataInfo.dateRange.start).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${new Date(dataInfo.dateRange.end).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
-    : 'Nov 2023 - Feb 2025';
+    : '';
 
   return (
     <div className="App">
@@ -57,7 +107,7 @@ function Dashboard() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          Tour A vs Tour B Comparative Analysis | {dateRange}
+          Tour A vs Tour B Comparative Analysis{dateRange && ` | ${dateRange}`}
         </motion.p>
       </motion.header>
 
@@ -66,20 +116,12 @@ function Dashboard() {
         <FilterPanel />
       </section>
 
-      {/* Error Message */}
-      {error && (
-        <div className="error-message">
-          <p>⚠️ {error}</p>
-          <p className="error-note">Using cached data. Make sure the Flask backend is running.</p>
-        </div>
-      )}
-
       {/* Main Stats */}
       <section className="stats-section">
         <div className="stats-grid">
           <StatCard
             title="Tour A Average"
-            value={`${tourAData.avgPower} kW`}
+            value={`${tourA.avgPower} kW`}
             subtitle="Power consumption"
             icon="🏢"
             color="#FF6B6B"
@@ -87,7 +129,7 @@ function Dashboard() {
           />
           <StatCard
             title="Tour B Average"
-            value={`${tourBData.avgPower} kW`}
+            value={`${tourB.avgPower} kW`}
             subtitle="Power consumption"
             icon="🏬"
             color="#4ECDC4"
@@ -103,7 +145,7 @@ function Dashboard() {
           />
           <StatCard
             title="Peak Power"
-            value={`~${Math.max(tourAData.maxPower, tourBData.maxPower).toFixed(1)} kW`}
+            value={`~${Math.max(tourA.maxPower, tourB.maxPower).toFixed(1)} kW`}
             subtitle="Maximum recorded"
             icon="⚡"
             color="#96CEB4"
@@ -111,7 +153,7 @@ function Dashboard() {
           />
           <StatCard
             title="Load Factor A"
-            value={tourAData.loadFactor?.toFixed(3) || '0.000'}
+            value={tourA.loadFactor?.toFixed(3) || '0.000'}
             subtitle="Capacity utilization"
             icon="📊"
             color="#9B59B6"
@@ -119,7 +161,7 @@ function Dashboard() {
           />
           <StatCard
             title="Load Factor B"
-            value={tourBData.loadFactor?.toFixed(3) || '0.000'}
+            value={tourB.loadFactor?.toFixed(3) || '0.000'}
             subtitle="Capacity utilization"
             icon="📊"
             color="#3498DB"

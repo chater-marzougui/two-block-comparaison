@@ -11,14 +11,20 @@ import {
   ComposedChart,
   Bar,
 } from 'recharts';
-import { monthlyData } from '../data/powerData';
+import { useData } from '../context/DataContext';
 
 const MonthlyChart: React.FC = () => {
+  const { monthlyData, loading, error } = useData();
+
+  if (loading || error || monthlyData.length === 0) {
+    return null;
+  }
+
   // Calculate cumulative energy for each month (power * 24hrs * ~30 days)
   const dataWithEnergy = monthlyData.map(item => ({
     ...item,
-    tourAEnergy: Math.round(item.tourA * 24 * 30),
-    tourBEnergy: Math.round(item.tourB * 24 * 30),
+    tourAEnergy: item.tourAEnergy || Math.round(item.tourA * 24 * 30),
+    tourBEnergy: item.tourBEnergy || Math.round(item.tourB * 24 * 30),
   }));
 
   return (
