@@ -50,6 +50,30 @@ def get_csv_files(data_dir):
     return sorted(csv_files)
 
 
+def normalize_column_name(col_name):
+    """
+    Normalize column names by removing trailing numeric suffixes.
+    
+    XLSX files have numeric suffixes (e.g., 'TOUR_A_(TGBT_D14) kW sys (kW) [AVG] 877')
+    while CSV files don't (e.g., 'TOUR_A_(TGBT_D14) kW sys (kW) [AVG] ')
+    This function strips trailing numbers to ensure consistent column names.
+    
+    Args:
+        col_name: Original column name
+        
+    Returns:
+        Normalized column name
+    """
+    import re
+    # Remove trailing whitespace and digits
+    # Pattern: ends with optional whitespace and digits
+    normalized = re.sub(r'\s*\d+$', '', str(col_name).strip())
+    # Ensure trailing space for consistency with CSV files
+    if not normalized.endswith(' ') and not normalized in ['Date', 'Time']:
+        normalized = normalized + ' '
+    return normalized
+
+
 def load_single_csv(file_path):
     """
     Load a single CSV file and parse it correctly.
@@ -68,6 +92,8 @@ def load_single_csv(file_path):
             # convert Date column from yyyy-mm-dd hh:mm:ss to dd-mm-yyyy
             if 'Date' in df.columns and 'Time' in df.columns:
                 df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%d-%m-%Y')
+            # Normalize column names to remove numeric suffixes
+            df.columns = [normalize_column_name(col) for col in df.columns]
         else:
             print(f"❌ Unsupported file type: {file_path}")
             return None

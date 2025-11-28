@@ -8,11 +8,17 @@ import WeeklyChart from './components/WeeklyChart';
 import ComparisonRadar from './components/ComparisonRadar';
 import InsightCards from './components/InsightCards';
 import TourComparison from './components/TourComparison';
+import MonthlyChart from './components/MonthlyChart';
+import EfficiencyMetrics from './components/EfficiencyMetrics';
 import { tourSummary } from './data/powerData';
 
 function App() {
   const tourA = tourSummary[0];
   const tourB = tourSummary[1];
+  
+  // Calculate efficiency difference
+  const efficiencyDiff = Math.abs(((tourA.avgPower - tourB.avgPower) / tourA.avgPower) * 100);
+  const moreEfficient = tourA.avgPower < tourB.avgPower ? 'Tour A' : 'Tour B';
 
   return (
     <div className="App">
@@ -37,7 +43,7 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          Tour A vs Tour B Comparative Analysis | Jan-Feb 2025
+          Tour A vs Tour B Comparative Analysis | Nov 2023 - Feb 2025
         </motion.p>
       </motion.header>
 
@@ -61,9 +67,9 @@ function App() {
             delay={0.2}
           />
           <StatCard
-            title="Efficiency Gain"
-            value="10.6%"
-            subtitle="Tour B more efficient"
+            title="Efficiency Comparison"
+            value={`${efficiencyDiff.toFixed(1)}%`}
+            subtitle={`${moreEfficient} more efficient`}
             icon="📉"
             color="#45B7D1"
             delay={0.3}
@@ -75,6 +81,22 @@ function App() {
             icon="⚡"
             color="#96CEB4"
             delay={0.4}
+          />
+          <StatCard
+            title="Load Factor A"
+            value={tourA.loadFactor.toFixed(3)}
+            subtitle="Capacity utilization"
+            icon="📊"
+            color="#9B59B6"
+            delay={0.5}
+          />
+          <StatCard
+            title="Load Factor B"
+            value={tourB.loadFactor.toFixed(3)}
+            subtitle="Capacity utilization"
+            icon="📊"
+            color="#3498DB"
+            delay={0.6}
           />
         </div>
       </section>
@@ -92,9 +114,19 @@ function App() {
         </div>
       </section>
 
+      {/* Monthly Trends */}
+      <section className="monthly-section">
+        <MonthlyChart />
+      </section>
+
       {/* Time Series */}
       <section className="timeseries-section">
         <TimeSeriesChart />
+      </section>
+
+      {/* Efficiency Metrics */}
+      <section className="efficiency-section">
+        <EfficiencyMetrics />
       </section>
 
       {/* Comparison Section */}
@@ -113,7 +145,7 @@ function App() {
         transition={{ delay: 1.2, duration: 0.6 }}
       >
         <p>SInERT Project - Power Consumption Analysis Dashboard</p>
-        <p className="footer-note">Data from January - February 2025</p>
+        <p className="footer-note">Data from November 2023 - February 2025</p>
       </motion.footer>
     </div>
   );
