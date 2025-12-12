@@ -4,11 +4,12 @@ This project provides comprehensive data exploration, analysis, and visualizatio
 
 ## 📊 Project Overview
 
-The project consists of three main components:
+The project consists of four main components:
 
 1. **Data Exploration Scripts** - Python scripts for loading, cleaning, and analyzing power consumption data
-2. **Flask Backend API** - REST API for serving data dynamically with filtering options
-3. **React Dashboard** - Interactive web dashboard for visualizing comparisons
+2. **Forecasting Module** - AI/ML models for predicting future energy consumption
+3. **Flask Backend API** - REST API for serving data dynamically with filtering options
+4. **React Dashboard** - Interactive web dashboard for visualizing comparisons
 
 ## 🗂️ Project Structure
 
@@ -24,6 +25,14 @@ The project consists of three main components:
 │   │   ├── services/           # API service layer
 │   │   └── data/               # Static fallback data
 │   └── README.md               # Frontend documentation
+├── forecasting/                # AI/ML forecasting module
+│   ├── data_loader.py          # Data loading and preprocessing
+│   ├── models.py               # Model implementations (LSTM, Prophet, etc.)
+│   ├── forecast_energy.py      # Main forecasting script
+│   ├── example.py              # Simple usage example
+│   ├── requirements.txt        # Forecasting dependencies
+│   ├── README.md               # Forecasting documentation
+│   └── USAGE_GUIDE.md          # Detailed usage guide
 ├── exploration_output/         # Generated visualizations and analysis
 ├── SINERT_DATA_CONCENTRATOR/   # Source data files (CSV/XLSX)
 ├── data_exploration.py         # Basic data exploration script
@@ -54,7 +63,24 @@ python data_exploration.py
 python data_exploration_v2.py
 ```
 
-### 2. Start Flask Backend
+### 2. Run Energy Forecasting
+
+```bash
+cd forecasting
+
+# Install forecasting dependencies
+pip install -r requirements.txt
+
+# Run simple example (fast - uses Random Forest only)
+python example.py
+
+# Run all models (LSTM, Prophet, ElasticNet, Exponential Smoothing, Random Forest)
+python forecast_energy.py
+```
+
+**Note**: By default, forecasting uses 5% of data for quick testing. To use the full dataset, edit `forecast_energy.py` and change `TEST_PERCENTAGE = 0.05` to `TEST_PERCENTAGE = 1.0`. See [forecasting/USAGE_GUIDE.md](forecasting/USAGE_GUIDE.md) for detailed instructions.
+
+### 3. Start Flask Backend
 
 ```bash
 cd backend
@@ -72,7 +98,7 @@ python app.py
 
 The API will be available at `http://localhost:5000`
 
-### 3. Start React Dashboard
+### 4. Start React Dashboard
 
 ```bash
 cd dashboard
@@ -115,6 +141,31 @@ curl "http://localhost:5000/api/hourly?day_of_week=0"
 # Get weekly time series
 curl "http://localhost:5000/api/timeseries?aggregation=weekly"
 ```
+
+## 🤖 Forecasting Features
+
+The forecasting module provides AI/ML-based energy consumption prediction using 5 different models:
+
+1. **LSTM (Long Short-Term Memory)** - Deep learning model for sequential data
+2. **Prophet** - Facebook's time series forecasting tool
+3. **ElasticNet** - Linear model with L1 and L2 regularization
+4. **Exponential Smoothing** - Statistical time series method
+5. **Random Forest** - Ensemble learning method
+
+### Prediction Scenarios
+
+- **Scenario 1**: Predict 1 week consumption after 3 weeks of historical data
+- **Scenario 2**: Predict 1 month consumption after 3 months of historical data
+
+### Key Features
+
+- **60-40 Train-Test Split**: Optimal balance for training and validation
+- **Test Percentage Control**: Use 5% of data for quick testing or 100% for full analysis
+- **Automatic Scaling**: Scenarios adjust based on available data
+- **Comprehensive Metrics**: MAE, RMSE, R², and MAPE for each model
+- **Comparative Analysis**: Side-by-side comparison of all models
+
+See [forecasting/README.md](forecasting/README.md) and [forecasting/USAGE_GUIDE.md](forecasting/USAGE_GUIDE.md) for detailed documentation.
 
 ## 📈 Dashboard Features
 
