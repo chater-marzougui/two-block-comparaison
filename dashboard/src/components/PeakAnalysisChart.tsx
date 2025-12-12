@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getPeakAnalysis, PeakAnalysisData } from '../services/api';
 import { useData } from '../context/DataContext';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 const PeakAnalysisChart: React.FC = () => {
   const { filters } = useData();
@@ -63,81 +45,11 @@ const PeakAnalysisChart: React.FC = () => {
     );
   }
 
-  const chartData = {
-    labels: tourA.peakHours.map(h => h.timeLabel),
-    datasets: [
-      {
-        label: 'Tour A',
-        data: tourA.peakHours.map(h => h.avgPower),
-        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-        borderColor: 'rgba(239, 68, 68, 1)',
-        borderWidth: 1,
-      },
-      {
-        label: 'Tour B',
-        data: tourB.peakHours.map(h => h.avgPower),
-        backgroundColor: 'rgba(16, 185, 129, 0.6)',
-        borderColor: 'rgba(16, 185, 129, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: '#e5e7eb',
-          font: {
-            size: 12,
-          },
-        },
-      },
-      title: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context: any) {
-            const label = context.dataset.label || '';
-            const value = context.parsed.y || 0;
-            return `${label}: ${value.toFixed(2)} kW`;
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Hour of Day',
-          color: '#9ca3af',
-        },
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(75, 85, 99, 0.3)',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Average Power (kW)',
-          color: '#9ca3af',
-        },
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(75, 85, 99, 0.3)',
-        },
-      },
-    },
-  };
+  const chartData = tourA.peakHours.map((hour, idx) => ({
+    timeLabel: hour.timeLabel,
+    tourA: hour.avgPower,
+    tourB: tourB.peakHours[idx]?.avgPower || 0,
+  }));
 
   return (
     <motion.div 
@@ -148,7 +60,28 @@ const PeakAnalysisChart: React.FC = () => {
     >
       <h2 className="chart-title">📈 Top 10 Peak Consumption Hours</h2>
       <div style={{ height: '350px' }}>
-        <Bar data={chartData} options={options} />
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(75, 85, 99, 0.3)" />
+            <XAxis 
+              dataKey="timeLabel" 
+              stroke="#9ca3af"
+              label={{ value: 'Hour of Day', position: 'insideBottom', offset: -5, fill: '#9ca3af' }}
+            />
+            <YAxis 
+              stroke="#9ca3af"
+              label={{ value: 'Average Power (kW)', angle: -90, position: 'insideLeft', fill: '#9ca3af' }}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+              labelStyle={{ color: '#e5e7eb' }}
+              formatter={(value: any) => `${value.toFixed(2)} kW`}
+            />
+            <Legend wrapperStyle={{ color: '#e5e7eb' }} />
+            <Bar dataKey="tourA" name="Tour A" fill="#ef4444" opacity={0.8} />
+            <Bar dataKey="tourB" name="Tour B" fill="#10b981" opacity={0.8} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
       
       <div className="stats-summary" style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>

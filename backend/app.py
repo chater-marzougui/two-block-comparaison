@@ -824,21 +824,21 @@ def get_data_quality():
 
     def calc_quality(power, name):
         total_points = len(power)
-        non_null = power.notna().sum()
-        null_count = power.isna().sum()
-        zero_count = (power == 0).sum()
-        non_zero_count = (power > 0).sum()
+        non_null = int(power.notna().sum())
+        null_count = int(power.isna().sum())
+        zero_count = int((power == 0).sum())
+        non_zero_count = int((power > 0).sum())
 
         return {
             'name': name,
             'totalPoints': int(total_points),
-            'validPoints': int(non_null),
-            'missingPoints': int(null_count),
-            'zeroPoints': int(zero_count),
-            'nonZeroPoints': int(non_zero_count),
+            'validPoints': non_null,
+            'missingPoints': null_count,
+            'zeroPoints': zero_count,
+            'nonZeroPoints': non_zero_count,
             'completeness': round(non_null / total_points * 100, 2) if total_points > 0 else 0,
             'validity': round(non_zero_count / total_points * 100, 2) if total_points > 0 else 0,
-            'hasValidReadings': non_zero_count > 0,
+            'hasValidReadings': bool(non_zero_count > 0),
             'issues': []
         }
 

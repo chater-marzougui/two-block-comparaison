@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getDistributionData, DistributionData } from '../services/api';
 import { useData } from '../context/DataContext';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 const DistributionChart: React.FC = () => {
   const { filters } = useData();
@@ -63,83 +45,11 @@ const DistributionChart: React.FC = () => {
     );
   }
 
-  const chartData = {
-    labels: tourA.histogram.map(bin => bin.binCenter.toFixed(1)),
-    datasets: [
-      {
-        label: 'Tour A',
-        data: tourA.histogram.map(bin => bin.count),
-        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-        borderColor: 'rgba(239, 68, 68, 1)',
-        borderWidth: 1,
-      },
-      {
-        label: 'Tour B',
-        data: tourB.histogram.map(bin => bin.count),
-        backgroundColor: 'rgba(16, 185, 129, 0.6)',
-        borderColor: 'rgba(16, 185, 129, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: '#e5e7eb',
-          font: {
-            size: 12,
-          },
-        },
-      },
-      title: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context: any) {
-            const label = context.dataset.label || '';
-            const value = context.parsed.y || 0;
-            return `${label}: ${value} readings`;
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Power (kW)',
-          color: '#9ca3af',
-        },
-        ticks: {
-          color: '#9ca3af',
-          maxRotation: 45,
-          minRotation: 45,
-        },
-        grid: {
-          color: 'rgba(75, 85, 99, 0.3)',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Frequency',
-          color: '#9ca3af',
-        },
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(75, 85, 99, 0.3)',
-        },
-      },
-    },
-  };
+  const chartData = tourA.histogram.map((bin, idx) => ({
+    binCenter: bin.binCenter.toFixed(1),
+    tourA: bin.count,
+    tourB: tourB.histogram[idx]?.count || 0,
+  }));
 
   return (
     <motion.div 
@@ -150,7 +60,30 @@ const DistributionChart: React.FC = () => {
     >
       <h2 className="chart-title">📊 Power Distribution Analysis</h2>
       <div style={{ height: '400px' }}>
-        <Bar data={chartData} options={options} />
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(75, 85, 99, 0.3)" />
+            <XAxis 
+              dataKey="binCenter" 
+              stroke="#9ca3af"
+              label={{ value: 'Power (kW)', position: 'insideBottom', offset: -5, fill: '#9ca3af' }}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis 
+              stroke="#9ca3af"
+              label={{ value: 'Frequency', angle: -90, position: 'insideLeft', fill: '#9ca3af' }}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+              labelStyle={{ color: '#e5e7eb' }}
+            />
+            <Legend wrapperStyle={{ color: '#e5e7eb' }} />
+            <Bar dataKey="tourA" name="Tour A" fill="#ef4444" opacity={0.8} />
+            <Bar dataKey="tourB" name="Tour B" fill="#10b981" opacity={0.8} />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
       
       <div className="stats-summary" style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
