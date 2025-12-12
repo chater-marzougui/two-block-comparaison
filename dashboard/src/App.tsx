@@ -12,6 +12,10 @@ import InsightCards from './components/InsightCards';
 import TourComparison from './components/TourComparison';
 import MonthlyChart from './components/MonthlyChart';
 import EfficiencyMetrics from './components/EfficiencyMetrics';
+import DistributionChart from './components/DistributionChart';
+import PeakAnalysisChart from './components/PeakAnalysisChart';
+import ComparisonMetrics from './components/ComparisonMetrics';
+import DataQualityCard from './components/DataQualityCard';
 
 function Dashboard() {
   const { tourA, tourB, dataInfo, error, loading } = useData();
@@ -207,6 +211,23 @@ function Dashboard() {
           <ComparisonRadar />
           <TourComparison />
         </div>
+      </section>
+
+      {/* Data Exploration Sections - New Calculations */}
+      <section className="exploration-section">
+        <DistributionChart />
+      </section>
+
+      <section className="exploration-section">
+        <PeakAnalysisChart />
+      </section>
+
+      <section className="exploration-section">
+        <ComparisonMetrics />
+      </section>
+
+      <section className="exploration-section">
+        <DataQualityCard />
       </section>
     </div>
   );

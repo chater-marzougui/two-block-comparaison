@@ -588,6 +588,395 @@ def get_heatmap_data():
     })
 
 
+@app.route('/api/distribution', methods=['GET'])
+def get_distribution_data():
+    """Get distribution statistics for power consumption."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    bins = int(request.args.get('bins', 30))  # Number of bins for histogram
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    def calc_distribution(power, name):
+        if len(power) == 0:
+            return {
+                'name': name,
+                'histogram': [],
+                'percentiles': {},
+                'quartiles': {},
+                'statistics': {}
+            }
+
+        # Calculate histogram
+        hist, bin_edges = np.histogram(power, bins=bins)
+        histogram_data = []
+        for i in range(len(hist)):
+            histogram_data.append({
+                'binStart': round(bin_edges[i], 2),
+                'binEnd': round(bin_edges[i + 1], 2),
+                'binCenter': round((bin_edges[i] + bin_edges[i + 1]) / 2, 2),
+                'count': int(hist[i]),
+                'frequency': round(hist[i] / len(power) * 100, 2)
+            })
+
+        # Calculate percentiles
+        percentiles = {
+            'p5': round(np.percentile(power, 5), 2),
+            'p10': round(np.percentile(power, 10), 2),
+            'p25': round(np.percentile(power, 25), 2),
+            'p50': round(np.percentile(power, 50), 2),
+            'p75': round(np.percentile(power, 75), 2),
+            'p90': round(np.percentile(power, 90), 2),
+            'p95': round(np.percentile(power, 95), 2)
+        }
+
+        # Calculate quartiles
+        q1 = np.percentile(power, 25)
+        q2 = np.percentile(power, 50)
+        q3 = np.percentile(power, 75)
+        iqr = q3 - q1
+
+        quartiles = {
+            'q1': round(q1, 2),
+            'q2': round(q2, 2),
+            'q3': round(q3, 2),
+            'iqr': round(iqr, 2),
+            'lowerWhisker': round(max(power.min(), q1 - 1.5 * iqr), 2),
+            'upperWhisker': round(min(power.max(), q3 + 1.5 * iqr), 2)
+        }
+
+        # Calculate statistics
+        statistics = {
+            'mean': round(power.mean(), 2),
+            'median': round(power.median(), 2),
+            'mode': round(power.mode()[0] if len(power.mode()) > 0 else power.median(), 2),
+            'std': round(power.std(), 2),
+            'variance': round(power.var(), 2),
+            'skewness': round(power.skew(), 2),
+            'kurtosis': round(power.kurtosis(), 2),
+            'min': round(power.min(), 2),
+            'max': round(power.max(), 2),
+            'range': round(power.max() - power.min(), 2),
+            'count': len(power)
+        }
+
+        return {
+            'name': name,
+            'histogram': histogram_data,
+            'percentiles': percentiles,
+            'quartiles': quartiles,
+            'statistics': statistics
+        }
+
+    return jsonify({
+        'tourA': calc_distribution(filtered_a, 'Tour A'),
+        'tourB': calc_distribution(filtered_b, 'Tour B'),
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date,
+            'bins': bins
+        }
+    })
+
+
+@app.route('/api/peak-analysis', methods=['GET'])
+def get_peak_analysis():
+    """Get peak and off-peak hours analysis."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    top_n = int(request.args.get('top_n', 5))
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    def analyze_peaks(power, name):
+        if len(power) == 0:
+            return {
+                'name': name,
+                'peakHours': [],
+                'offPeakHours': [],
+                'dailyPeaks': {
+                    'mean': 0,
+                    'median': 0,
+                    'max': 0,
+                    'min': 0,
+                    'distribution': []
+                }
+            }
+
+        # Hourly averages
+        hourly_avg = power.groupby(power.index.hour).mean()
+
+        # Peak hours (top N)
+        peak_hours = hourly_avg.nlargest(top_n)
+        peak_hours_data = [
+            {
+                'hour': int(hour),
+                'avgPower': round(val, 2),
+                'timeLabel': f'{hour}:00'
+            }
+            for hour, val in peak_hours.items()
+        ]
+
+        # Off-peak hours (bottom N)
+        off_peak_hours = hourly_avg.nsmallest(top_n)
+        off_peak_hours_data = [
+            {
+                'hour': int(hour),
+                'avgPower': round(val, 2),
+                'timeLabel': f'{hour}:00'
+            }
+            for hour, val in off_peak_hours.items()
+        ]
+
+        # Daily peak analysis
+        daily_max = power.resample('D').max()
+        daily_peaks_hist, bins = np.histogram(daily_max.dropna(), bins=20)
+        daily_peaks_distribution = [
+            {
+                'binStart': round(bins[i], 2),
+                'binEnd': round(bins[i + 1], 2),
+                'count': int(daily_peaks_hist[i])
+            }
+            for i in range(len(daily_peaks_hist))
+        ]
+
+        return {
+            'name': name,
+            'peakHours': peak_hours_data,
+            'offPeakHours': off_peak_hours_data,
+            'dailyPeaks': {
+                'mean': round(daily_max.mean(), 2),
+                'median': round(daily_max.median(), 2),
+                'max': round(daily_max.max(), 2),
+                'min': round(daily_max.min(), 2),
+                'distribution': daily_peaks_distribution
+            }
+        }
+
+    return jsonify({
+        'tourA': analyze_peaks(filtered_a, 'Tour A'),
+        'tourB': analyze_peaks(filtered_b, 'Tour B'),
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date,
+            'topN': top_n
+        }
+    })
+
+
+@app.route('/api/data-quality', methods=['GET'])
+def get_data_quality():
+    """Get data quality report."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    def calc_quality(power, name):
+        total_points = len(power)
+        non_null = power.notna().sum()
+        null_count = power.isna().sum()
+        zero_count = (power == 0).sum()
+        non_zero_count = (power > 0).sum()
+
+        return {
+            'name': name,
+            'totalPoints': int(total_points),
+            'validPoints': int(non_null),
+            'missingPoints': int(null_count),
+            'zeroPoints': int(zero_count),
+            'nonZeroPoints': int(non_zero_count),
+            'completeness': round(non_null / total_points * 100, 2) if total_points > 0 else 0,
+            'validity': round(non_zero_count / total_points * 100, 2) if total_points > 0 else 0,
+            'hasValidReadings': non_zero_count > 0,
+            'issues': []
+        }
+
+    quality_a = calc_quality(filtered_a, 'Tour A')
+    quality_b = calc_quality(filtered_b, 'Tour B')
+
+    # Add issues
+    if quality_a['completeness'] < 50:
+        quality_a['issues'].append('Low data completeness (< 50%)')
+    if quality_a['validity'] < 50:
+        quality_a['issues'].append('Many zero readings (> 50%)')
+    if quality_b['completeness'] < 50:
+        quality_b['issues'].append('Low data completeness (< 50%)')
+    if quality_b['validity'] < 50:
+        quality_b['issues'].append('Many zero readings (> 50%)')
+
+    return jsonify({
+        'tourA': quality_a,
+        'tourB': quality_b,
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    })
+
+
+@app.route('/api/comparison', methods=['GET'])
+def get_comparison_metrics():
+    """Get detailed comparison metrics between tours."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    if len(filtered_a) == 0 or len(filtered_b) == 0:
+        return jsonify({'error': 'Insufficient data for comparison'}), 400
+
+    # Align data on common time indices
+    common_index = filtered_a.index.intersection(filtered_b.index)
+    aligned_a = filtered_a[common_index]
+    aligned_b = filtered_b[common_index]
+
+    # Calculate comparison metrics
+    avg_a = aligned_a.mean()
+    avg_b = aligned_b.mean()
+    diff_abs = avg_b - avg_a
+    diff_pct = (diff_abs / avg_a * 100) if avg_a > 0 else 0
+
+    # Correlation
+    correlation = aligned_a.corr(aligned_b) if len(aligned_a) > 1 else 0
+
+    # Hourly comparison
+    hourly_a = aligned_a.groupby(aligned_a.index.hour).mean()
+    hourly_b = aligned_b.groupby(aligned_b.index.hour).mean()
+    hourly_diff = hourly_b - hourly_a
+    max_diff_hour = int(hourly_diff.abs().idxmax()) if len(hourly_diff) > 0 else 0
+    max_diff_value = hourly_diff[max_diff_hour] if len(hourly_diff) > 0 else 0
+
+    # Peak comparison
+    peak_a = aligned_a.max()
+    peak_b = aligned_b.max()
+    peak_diff_pct = ((peak_b - peak_a) / peak_a * 100) if peak_a > 0 else 0
+
+    # Efficiency comparison
+    load_factor_a = avg_a / peak_a if peak_a > 0 else 0
+    load_factor_b = avg_b / peak_b if peak_b > 0 else 0
+    efficiency_winner = 'Tour A' if load_factor_a > load_factor_b else 'Tour B'
+
+    # Time periods when each is higher
+    a_higher_count = (aligned_a > aligned_b).sum()
+    b_higher_count = (aligned_b > aligned_a).sum()
+    a_higher_pct = (a_higher_count / len(aligned_a) * 100) if len(aligned_a) > 0 else 0
+    b_higher_pct = (b_higher_count / len(aligned_b) * 100) if len(aligned_b) > 0 else 0
+
+    return jsonify({
+        'averages': {
+            'tourA': round(avg_a, 2),
+            'tourB': round(avg_b, 2),
+            'difference': round(diff_abs, 2),
+            'differencePercent': round(diff_pct, 2),
+            'moreEfficient': 'Tour A' if avg_a < avg_b else 'Tour B'
+        },
+        'peaks': {
+            'tourA': round(peak_a, 2),
+            'tourB': round(peak_b, 2),
+            'difference': round(peak_b - peak_a, 2),
+            'differencePercent': round(peak_diff_pct, 2)
+        },
+        'correlation': {
+            'value': round(correlation, 3),
+            'strength': 'strong' if abs(correlation) > 0.7 else 'moderate' if abs(correlation) > 0.4 else 'weak',
+            'description': f'{"Positive" if correlation > 0 else "Negative"} correlation between tours'
+        },
+        'loadFactors': {
+            'tourA': round(load_factor_a, 3),
+            'tourB': round(load_factor_b, 3),
+            'winner': efficiency_winner
+        },
+        'timeComparison': {
+            'tourAHigherPercent': round(a_higher_pct, 1),
+            'tourBHigherPercent': round(b_higher_pct, 1),
+            'tourAHigherCount': int(a_higher_count),
+            'tourBHigherCount': int(b_higher_count)
+        },
+        'hourlyComparison': {
+            'maxDifferenceHour': max_diff_hour,
+            'maxDifferenceValue': round(max_diff_value, 2),
+            'maxDifferenceLabel': f'{max_diff_hour}:00'
+        },
+        'dataPoints': {
+            'total': len(aligned_a),
+            'commonTimePoints': len(common_index)
+        },
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    })
+
+
 if __name__ == '__main__':
     # Preload data on startup
     print("Loading data...")

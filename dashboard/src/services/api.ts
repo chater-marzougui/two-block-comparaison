@@ -177,3 +177,194 @@ export async function getHeatmapData(params?: {
   const queryString = query.toString();
   return fetchJson(`${API_BASE_URL}/heatmap${queryString ? '?' + queryString : ''}`);
 }
+
+// New API types and functions for data exploration calculations
+
+export interface HistogramBin {
+  binStart: number;
+  binEnd: number;
+  binCenter: number;
+  count: number;
+  frequency: number;
+}
+
+export interface Percentiles {
+  p5: number;
+  p10: number;
+  p25: number;
+  p50: number;
+  p75: number;
+  p90: number;
+  p95: number;
+}
+
+export interface Quartiles {
+  q1: number;
+  q2: number;
+  q3: number;
+  iqr: number;
+  lowerWhisker: number;
+  upperWhisker: number;
+}
+
+export interface DistributionStatistics {
+  mean: number;
+  median: number;
+  mode: number;
+  std: number;
+  variance: number;
+  skewness: number;
+  kurtosis: number;
+  min: number;
+  max: number;
+  range: number;
+  count: number;
+}
+
+export interface DistributionData {
+  name: string;
+  histogram: HistogramBin[];
+  percentiles: Percentiles;
+  quartiles: Quartiles;
+  statistics: DistributionStatistics;
+}
+
+export interface PeakHourData {
+  hour: number;
+  avgPower: number;
+  timeLabel: string;
+}
+
+export interface DailyPeaksData {
+  mean: number;
+  median: number;
+  max: number;
+  min: number;
+  distribution: Array<{
+    binStart: number;
+    binEnd: number;
+    count: number;
+  }>;
+}
+
+export interface PeakAnalysisData {
+  name: string;
+  peakHours: PeakHourData[];
+  offPeakHours: PeakHourData[];
+  dailyPeaks: DailyPeaksData;
+}
+
+export interface DataQualityData {
+  name: string;
+  totalPoints: number;
+  validPoints: number;
+  missingPoints: number;
+  zeroPoints: number;
+  nonZeroPoints: number;
+  completeness: number;
+  validity: number;
+  hasValidReadings: boolean;
+  issues: string[];
+}
+
+export interface ComparisonMetrics {
+  averages: {
+    tourA: number;
+    tourB: number;
+    difference: number;
+    differencePercent: number;
+    moreEfficient: string;
+  };
+  peaks: {
+    tourA: number;
+    tourB: number;
+    difference: number;
+    differencePercent: number;
+  };
+  correlation: {
+    value: number;
+    strength: string;
+    description: string;
+  };
+  loadFactors: {
+    tourA: number;
+    tourB: number;
+    winner: string;
+  };
+  timeComparison: {
+    tourAHigherPercent: number;
+    tourBHigherPercent: number;
+    tourAHigherCount: number;
+    tourBHigherCount: number;
+  };
+  hourlyComparison: {
+    maxDifferenceHour: number;
+    maxDifferenceValue: number;
+    maxDifferenceLabel: string;
+  };
+  dataPoints: {
+    total: number;
+    commonTimePoints: number;
+  };
+  filters: Record<string, string | null>;
+}
+
+export async function getDistributionData(params?: {
+  month?: string;
+  startDate?: string;
+  endDate?: string;
+  bins?: number;
+}): Promise<{ tourA: DistributionData; tourB: DistributionData; filters: Record<string, string | null> }> {
+  const query = new URLSearchParams();
+  if (params?.month) query.append('month', params.month);
+  if (params?.startDate) query.append('start_date', params.startDate);
+  if (params?.endDate) query.append('end_date', params.endDate);
+  if (params?.bins) query.append('bins', params.bins.toString());
+  
+  const queryString = query.toString();
+  return fetchJson(`${API_BASE_URL}/distribution${queryString ? '?' + queryString : ''}`);
+}
+
+export async function getPeakAnalysis(params?: {
+  month?: string;
+  startDate?: string;
+  endDate?: string;
+  topN?: number;
+}): Promise<{ tourA: PeakAnalysisData; tourB: PeakAnalysisData; filters: Record<string, string | null> }> {
+  const query = new URLSearchParams();
+  if (params?.month) query.append('month', params.month);
+  if (params?.startDate) query.append('start_date', params.startDate);
+  if (params?.endDate) query.append('end_date', params.endDate);
+  if (params?.topN) query.append('top_n', params.topN.toString());
+  
+  const queryString = query.toString();
+  return fetchJson(`${API_BASE_URL}/peak-analysis${queryString ? '?' + queryString : ''}`);
+}
+
+export async function getDataQuality(params?: {
+  month?: string;
+  startDate?: string;
+  endDate?: string;
+}): Promise<{ tourA: DataQualityData; tourB: DataQualityData; filters: Record<string, string | null> }> {
+  const query = new URLSearchParams();
+  if (params?.month) query.append('month', params.month);
+  if (params?.startDate) query.append('start_date', params.startDate);
+  if (params?.endDate) query.append('end_date', params.endDate);
+  
+  const queryString = query.toString();
+  return fetchJson(`${API_BASE_URL}/data-quality${queryString ? '?' + queryString : ''}`);
+}
+
+export async function getComparisonMetrics(params?: {
+  month?: string;
+  startDate?: string;
+  endDate?: string;
+}): Promise<ComparisonMetrics> {
+  const query = new URLSearchParams();
+  if (params?.month) query.append('month', params.month);
+  if (params?.startDate) query.append('start_date', params.startDate);
+  if (params?.endDate) query.append('end_date', params.endDate);
+  
+  const queryString = query.toString();
+  return fetchJson(`${API_BASE_URL}/comparison${queryString ? '?' + queryString : ''}`);
+}
