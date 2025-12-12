@@ -91,11 +91,11 @@ const DistributionChart: React.FC = () => {
           <h3 style={{ color: '#ef4444', marginBottom: '10px' }}>Tour A Statistics</h3>
           <div className="stat-row">
             <span>Mean:</span>
-            <strong>{tourA.statistics.mean} kW</strong>
+            <strong>{tourA.statistics.mean.toFixed(2)} kW</strong>
           </div>
           <div className="stat-row">
             <span>Median:</span>
-            <strong>{tourA.statistics.median} kW</strong>
+            <strong>{tourA.statistics.median.toFixed(2)} kW</strong>
           </div>
           <div className="stat-row">
             <span>Std Dev:</span>
@@ -115,11 +115,11 @@ const DistributionChart: React.FC = () => {
           <h3 style={{ color: '#10b981', marginBottom: '10px' }}>Tour B Statistics</h3>
           <div className="stat-row">
             <span>Mean:</span>
-            <strong>{tourB.statistics.mean} kW</strong>
+            <strong>{tourB.statistics.mean.toFixed(2)} kW</strong>
           </div>
           <div className="stat-row">
             <span>Median:</span>
-            <strong>{tourB.statistics.median} kW</strong>
+            <strong>{tourB.statistics.median.toFixed(2)} kW</strong>
           </div>
           <div className="stat-row">
             <span>Std Dev:</span>
