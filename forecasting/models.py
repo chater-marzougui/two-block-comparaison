@@ -13,6 +13,9 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
+# Constants
+EPSILON = 1e-10  # Small value to prevent division by zero
+
 
 def prepare_sequences(data, lookback_steps, forecast_steps):
     """
@@ -38,7 +41,7 @@ def calculate_metrics(y_true, y_pred):
     mae = mean_absolute_error(y_true, y_pred)
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     r2 = r2_score(y_true, y_pred)
-    mape = np.mean(np.abs((y_true - y_pred) / (y_true + 1e-10))) * 100
+    mape = np.mean(np.abs((y_true - y_pred) / (y_true + EPSILON))) * 100
     
     return {
         'MAE': mae,
@@ -200,7 +203,7 @@ class ExponentialSmoothingForecaster:
                 seasonal='add',
                 use_boxcox=False
             ).fit()
-        except:
+        except Exception:
             # Fallback to simpler model if seasonal doesn't work
             self.model = ExponentialSmoothing(
                 series,

@@ -12,6 +12,10 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
+# Constants for data cleaning
+OUTLIER_STD_MULTIPLIER = 3  # Standard deviations for outlier detection
+MAX_POWER_KW = 50  # Maximum expected power consumption in kW
+
 
 def normalize_column_name(col_name):
     """
@@ -118,10 +122,10 @@ def clean_power_data(df, power_col):
     """Clean power data by removing outliers and handling missing values."""
     power = pd.to_numeric(df[power_col], errors='coerce')
     
-    # Remove extreme outliers (> 3 standard deviations or above 50 kW for these buildings)
+    # Remove extreme outliers (> OUTLIER_STD_MULTIPLIER standard deviations or above MAX_POWER_KW)
     mean_power = power.mean()
     std_power = power.std()
-    upper_limit = min(mean_power + 3 * std_power, 50)  # Cap at 50 kW
+    upper_limit = min(mean_power + OUTLIER_STD_MULTIPLIER * std_power, MAX_POWER_KW)
     power = power.where(power <= upper_limit, np.nan)
     
     # Interpolate missing values
