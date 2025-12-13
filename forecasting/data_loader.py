@@ -134,7 +134,7 @@ def clean_power_data(df, power_col):
     return power
 
 
-def load_tour_data(data_dir, tour='A', test_percentage=1.0):
+def load_tour_data(data_dir, tour='A', test_percentage=1.0, use_cache=True):
     """
     Load and prepare data for a specific tour.
     
@@ -142,62 +142,87 @@ def load_tour_data(data_dir, tour='A', test_percentage=1.0):
         data_dir: Path to the data directory
         tour: 'A' or 'B'
         test_percentage: Percentage of data to use (0.0-1.0). Use 0.05 for testing.
+        use_cache: Whether to use cached data if available
         
     Returns:
         DataFrame with datetime index and power consumption values
     """
     print(f"\nLoading Tour {tour} data...")
     
-    # Load all data
-    df = load_all_data(data_dir)
+    # Check for cached processed data
+    cache_dir = os.path.join(os.path.dirname(data_dir), 'cache')
+    cache_file = os.path.join(cache_dir, f'tour_{tour.lower()}_processed.pkl')
     
-    if df is None or len(df) == 0:
-        raise ValueError("No data could be loaded!")
+    if use_cache and os.path.exists(cache_file):
+        print(f"Loading cached Tour {tour} data...")
+        try:
+            with open(cache_file, 'rb') as f:
+                result_df = pd.read_pickle(f)
+            print(f"Loaded from cache: {len(result_df)} samples")
+        except Exception as e:
+            print(f"Cache loading failed: {e}. Loading from source...")
+            use_cache = False
     
-    # Get power column
-    power_col = get_power_column(df, tour)
-    if not power_col:
-        raise ValueError(f"Could not find power column for Tour {tour}")
-    
-    print(f"Tour {tour} power column: {power_col}")
-    
-    # Clean power data
-    power = clean_power_data(df, power_col)
-    
-    # Create a clean dataframe
-    result_df = pd.DataFrame({'power': power})
-    result_df = result_df.dropna()
-    
-    # Apply test percentage
-    if test_percentage < 1.0:
-        n_samples = int(len(result_df) * test_percentage)
-        result_df = result_df.iloc[:n_samples]
-        print(f"Using {test_percentage*100}% of data: {len(result_df)} samples")
-    else:
-        print(f"Using full dataset: {len(result_df)} samples")
+    if not use_cache or not os.path.exists(cache_file):
+        # Load all data
+        if os.path.exists(f'../exploration_output/tour_{tour.lower()}_combined.csv'):
+            print(f"Loading pre-combined Tour {tour} data...")
+            df = pd.read_csv(f'../exploration_output/tour_{tour.lower()}_combined.csv', parse_dates=['Datetime'], index_col='Datetime')
+        else:
+            df = load_all_data(data_dir)
+        
+        if df is None or len(df) == 0:
+            raise ValueError("No data could be loaded!")
+        
+        # Get power column
+        power_col = get_power_column(df, tour)
+        if not power_col:
+            raise ValueError(f"Could not find power column for Tour {tour}")
+        
+        print(f"Tour {tour} power column: {power_col}")
+        
+        # Clean power data
+        power = clean_power_data(df, power_col)
+        
+        # Create a clean dataframe
+        result_df = pd.DataFrame({'power': power})
+        result_df = result_df.dropna()
+        print(f"Loaded: {len(result_df)} samples")
+        
+        # Save to cache
+        os.makedirs(cache_dir, exist_ok=True)
+        result_df.to_pickle(cache_file)
+        print(f"Data cached to {cache_file}")
     
     print(f"Date range: {result_df.index.min()} to {result_df.index.max()}")
     print(f"Power stats - Mean: {result_df['power'].mean():.2f} kW, "
           f"Max: {result_df['power'].max():.2f} kW, "
           f"Min: {result_df['power'].min():.2f} kW")
     
+    # Apply test percentage
+    if test_percentage < 1.0:
+        n_samples = int(len(result_df) * test_percentage)
+        result_df = result_df.iloc[:n_samples]
+        print(f"Using {test_percentage*100}% of data: {len(result_df)} samples")
+    
     return result_df
 
 
-def prepare_forecasting_data(data, freq='15min'):
+def prepare_forecasting_data(data, freq='D'):
     """
     Prepare data for forecasting by resampling to consistent frequency.
     
     Args:
         data: DataFrame with datetime index and power column
-        freq: Frequency for resampling (default: '15min')
+        freq: Frequency for resampling (default: 'D' for daily)
         
     Returns:
         Resampled DataFrame
     """
-    # Resample to ensure consistent frequency
-    data_resampled = data.resample(freq).mean()
-    data_resampled = data_resampled.interpolate(method='time', limit=10)
+    # Resample to daily frequency and sum to get total daily consumption
+    # Sum converts kW readings to total kWh per day (assuming uniform intervals)
+    data_resampled = data.resample(freq).sum()
+    data_resampled = data_resampled.interpolate(method='time', limit=3)
     data_resampled = data_resampled.dropna()
     
     return data_resampled

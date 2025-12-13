@@ -5,10 +5,7 @@ Main script to run all forecasting models on Tour A and Tour B data
 
 import os
 import sys
-import pandas as pd
-import numpy as np
 import warnings
-from datetime import timedelta
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +25,7 @@ warnings.filterwarnings('ignore')
 # ============================================================================
 
 # Test percentage: 0.05 for testing (5% of data), 1.0 for full dataset
-TEST_PERCENTAGE = 0.05
+TEST_PERCENTAGE = 1
 
 # Train-test split ratio
 TRAIN_RATIO = 0.6
@@ -40,39 +37,39 @@ def get_scenarios(test_percentage):
     """Get scenarios adjusted for test percentage."""
     if test_percentage < 0.1:
         # For testing with small dataset, use much smaller windows
-        # 96 intervals per day (15-min intervals)
+        # Daily time steps (1 value per day)
         return [
             {
-                'name': '1 week after 3 weeks (test mode)',
-                'lookback_weeks': 0.14,  # ~1 day for testing
-                'forecast_weeks': 0.07,  # ~12 hours for testing
-                'lookback_steps': 96,  # 1 day
-                'forecast_steps': 48   # 12 hours
+                'name': '3 days after 7 days (test mode)',
+                'lookback_weeks': 1,
+                'forecast_weeks': 0.43,  # ~3 days
+                'lookback_steps': 7,  # 7 days
+                'forecast_steps': 3   # 3 days
             },
             {
-                'name': '1 month after 3 months (test mode)',
-                'lookback_weeks': 0.29,  # ~2 days for testing
-                'forecast_weeks': 0.14,  # ~1 day for testing
-                'lookback_steps': 192,  # 2 days
-                'forecast_steps': 96    # 1 day
+                'name': '1 week after 2 weeks (test mode)',
+                'lookback_weeks': 2,
+                'forecast_weeks': 1,
+                'lookback_steps': 14,  # 2 weeks = 14 days
+                'forecast_steps': 7    # 1 week = 7 days
             }
         ]
     else:
-        # For full dataset, use actual time periods
+        # For full dataset, use actual time periods with daily aggregation
         return [
             {
                 'name': '1 week after 3 weeks',
                 'lookback_weeks': 3,
                 'forecast_weeks': 1,
-                'lookback_steps': 3 * 7 * 96,  # 3 weeks * 7 days * 96 (15-min intervals per day)
-                'forecast_steps': 1 * 7 * 96   # 1 week
+                'lookback_steps': 21,  # 3 weeks = 21 days
+                'forecast_steps': 7    # 1 week = 7 days
             },
             {
                 'name': '1 month after 3 months',
                 'lookback_weeks': 12,  # ~3 months
                 'forecast_weeks': 4,   # ~1 month
-                'lookback_steps': 12 * 7 * 96,  # 12 weeks
-                'forecast_steps': 4 * 7 * 96    # 4 weeks
+                'lookback_steps': 90,  # ~3 months = 90 days
+                'forecast_steps': 30   # ~1 month = 30 days
             }
         ]
 
@@ -91,17 +88,28 @@ def split_train_test(data, train_ratio=0.6):
     return train, test
 
 
-def run_lstm_forecast(X_train, y_train, X_test, y_test, scenario_name):
+def run_lstm_forecast(X_train, y_train, X_test, y_test, scenario_name, model_path=None):
     """Run LSTM forecasting."""
     print(f"\n  Running LSTM...")
     
     try:
-        model = LSTMForecaster(
-            lookback_steps=X_train.shape[1],
-            forecast_steps=y_train.shape[1]
-        )
+        # Try to load existing model
+        if model_path and os.path.exists(model_path):
+            print(f"    Loading saved model...")
+            model = LSTMForecaster.load(model_path)
+        else:
+            model = LSTMForecaster(
+                lookback_steps=X_train.shape[1],
+                forecast_steps=y_train.shape[1]
+            )
+            
+            model.fit(X_train, y_train, epochs=30, batch_size=32, verbose=0)
+            
+            # Save model
+            if model_path:
+                model.save(model_path)
+                print(f"    Model saved to {model_path}")
         
-        model.fit(X_train, y_train, epochs=30, batch_size=32, verbose=0)
         predictions = model.predict(X_test)
         
         # Calculate metrics
@@ -152,17 +160,28 @@ def run_prophet_forecast(train_data, test_data, train_dates, test_dates, forecas
         return None
 
 
-def run_elasticnet_forecast(X_train, y_train, X_test, y_test, scenario_name):
+def run_elasticnet_forecast(X_train, y_train, X_test, y_test, scenario_name, model_path=None):
     """Run ElasticNet forecasting."""
     print(f"\n  Running ElasticNet...")
     
     try:
-        model = ElasticNetForecaster(
-            lookback_steps=X_train.shape[1],
-            forecast_steps=y_train.shape[1]
-        )
+        # Try to load existing model
+        if model_path and os.path.exists(model_path):
+            print(f"    Loading saved model...")
+            model = ElasticNetForecaster.load(model_path)
+        else:
+            model = ElasticNetForecaster(
+                lookback_steps=X_train.shape[1],
+                forecast_steps=y_train.shape[1]
+            )
+            
+            model.fit(X_train, y_train)
+            
+            # Save model
+            if model_path:
+                model.save(model_path)
+                print(f"    Model saved to {model_path}")
         
-        model.fit(X_train, y_train)
         predictions = model.predict(X_test)
         
         # Calculate metrics
@@ -213,17 +232,28 @@ def run_exponential_smoothing_forecast(train_data, test_data, forecast_steps, sc
         return None
 
 
-def run_random_forest_forecast(X_train, y_train, X_test, y_test, scenario_name):
+def run_random_forest_forecast(X_train, y_train, X_test, y_test, scenario_name, model_path=None):
     """Run Random Forest forecasting."""
     print(f"\n  Running Random Forest...")
     
     try:
-        model = RandomForestForecaster(
-            lookback_steps=X_train.shape[1],
-            forecast_steps=y_train.shape[1]
-        )
+        # Try to load existing model
+        if model_path and os.path.exists(model_path):
+            print(f"    Loading saved model...")
+            model = RandomForestForecaster.load(model_path)
+        else:
+            model = RandomForestForecaster(
+                lookback_steps=X_train.shape[1],
+                forecast_steps=y_train.shape[1]
+            )
+            
+            model.fit(X_train, y_train)
+            
+            # Save model
+            if model_path:
+                model.save(model_path)
+                print(f"    Model saved to {model_path}")
         
-        model.fit(X_train, y_train)
         predictions = model.predict(X_test)
         
         # Calculate metrics
@@ -293,9 +323,12 @@ def forecast_tour(tour, data_dir, test_percentage, scenarios):
         print(f"  X_test shape: {X_test.shape}, y_test shape: {y_test.shape}")
         
         # Run each model
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_dir = os.path.join(base_dir, 'saved_models', f'tour_{tour}', scenario['name'].replace(' ', '_'))
         
         # 1. LSTM
-        result = run_lstm_forecast(X_train, y_train, X_test, y_test, scenario['name'])
+        lstm_path = os.path.join(model_dir, 'lstm.pkl')
+        result = run_lstm_forecast(X_train, y_train, X_test, y_test, scenario['name'], lstm_path)
         if result:
             results.append(result)
         
@@ -308,7 +341,8 @@ def forecast_tour(tour, data_dir, test_percentage, scenarios):
             results.append(result)
         
         # 3. ElasticNet
-        result = run_elasticnet_forecast(X_train, y_train, X_test, y_test, scenario['name'])
+        elasticnet_path = os.path.join(model_dir, 'elasticnet.pkl')
+        result = run_elasticnet_forecast(X_train, y_train, X_test, y_test, scenario['name'], elasticnet_path)
         if result:
             results.append(result)
         
@@ -320,7 +354,8 @@ def forecast_tour(tour, data_dir, test_percentage, scenarios):
             results.append(result)
         
         # 5. Random Forest
-        result = run_random_forest_forecast(X_train, y_train, X_test, y_test, scenario['name'])
+        rf_path = os.path.join(model_dir, 'random_forest.pkl')
+        result = run_random_forest_forecast(X_train, y_train, X_test, y_test, scenario['name'], rf_path)
         if result:
             results.append(result)
     

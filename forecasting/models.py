@@ -5,6 +5,8 @@ Implements various forecasting models for energy consumption prediction
 
 import numpy as np
 import pandas as pd
+import pickle
+import os
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import ElasticNet
 from sklearn.preprocessing import StandardScaler
@@ -30,7 +32,7 @@ def prepare_sequences(data, lookback_steps, forecast_steps):
         X (input sequences), y (target sequences)
     """
     X, y = [], []
-    for i in range(len(data) - lookback_steps - forecast_steps + 1):
+    for i in range(0, len(data) - lookback_steps - forecast_steps + 1, 5):
         X.append(data[i:i+lookback_steps])
         y.append(data[i+lookback_steps:i+lookback_steps+forecast_steps])
     return np.array(X), np.array(y)
@@ -41,7 +43,14 @@ def calculate_metrics(y_true, y_pred):
     mae = mean_absolute_error(y_true, y_pred)
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     r2 = r2_score(y_true, y_pred)
-    mape = np.mean(np.abs((y_true - y_pred) / (y_true + EPSILON))) * 100
+    
+    # Calculate MAPE only for non-zero values to avoid division issues
+    # Filter out values where y_true is very small (< 1.0)
+    mask = np.abs(y_true) > 1.0
+    if mask.sum() > 0:
+        mape = np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
+    else:
+        mape = np.nan
     
     return {
         'MAE': mae,
@@ -104,6 +113,24 @@ class LSTMForecaster:
         predictions = self.model.predict(X_test_reshaped, verbose=0)
         
         return predictions
+    
+    def save(self, filepath):
+        """Save model to file."""
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        self.model.save(filepath.replace('.pkl', '.h5'))
+        with open(filepath, 'wb') as f:
+            pickle.dump({'scaler': self.scaler, 'lookback': self.lookback_steps, 'forecast': self.forecast_steps}, f)
+    
+    @classmethod
+    def load(cls, filepath):
+        """Load model from file."""
+        from tensorflow.keras.models import load_model as keras_load
+        with open(filepath, 'rb') as f:
+            data = pickle.load(f)
+        instance = cls(data['lookback'], data['forecast'])
+        instance.scaler = data['scaler']
+        instance.model = keras_load(filepath.replace('.pkl', '.h5'))
+        return instance
 
 
 class ProphetForecaster:
@@ -142,6 +169,21 @@ class ProphetForecaster:
         forecast = self.model.predict(future)
         
         return forecast['yhat'].values
+    
+    def save(self, filepath):
+        """Save model to file."""
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'wb') as f:
+            pickle.dump({'model': self.model, 'lookback': self.lookback_steps, 'forecast': self.forecast_steps}, f)
+    
+    @classmethod
+    def load(cls, filepath):
+        """Load model from file."""
+        with open(filepath, 'rb') as f:
+            data = pickle.load(f)
+        instance = cls(data['lookback'], data['forecast'])
+        instance.model = data['model']
+        return instance
 
 
 class ElasticNetForecaster:
@@ -177,6 +219,22 @@ class ElasticNetForecaster:
             predictions.append(pred)
         
         return np.array(predictions).T
+    
+    def save(self, filepath):
+        """Save model to file."""
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'wb') as f:
+            pickle.dump({'models': self.models, 'scaler': self.scaler, 'lookback': self.lookback_steps, 'forecast': self.forecast_steps}, f)
+    
+    @classmethod
+    def load(cls, filepath):
+        """Load model from file."""
+        with open(filepath, 'rb') as f:
+            data = pickle.load(f)
+        instance = cls(data['lookback'], data['forecast'])
+        instance.models = data['models']
+        instance.scaler = data['scaler']
+        return instance
 
 
 class ExponentialSmoothingForecaster:
@@ -198,7 +256,7 @@ class ExponentialSmoothingForecaster:
         try:
             self.model = ExponentialSmoothing(
                 series,
-                seasonal_periods=96,  # 96 * 15min = 24 hours
+                seasonal_periods=7,  # 7 days = 1 week seasonality
                 trend='add',
                 seasonal='add',
                 use_boxcox=False
@@ -215,6 +273,21 @@ class ExponentialSmoothingForecaster:
         """Make predictions."""
         forecast = self.model.forecast(steps=steps)
         return forecast.values
+    
+    def save(self, filepath):
+        """Save model to file."""
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'wb') as f:
+            pickle.dump({'model': self.model, 'lookback': self.lookback_steps, 'forecast': self.forecast_steps}, f)
+    
+    @classmethod
+    def load(cls, filepath):
+        """Load model from file."""
+        with open(filepath, 'rb') as f:
+            data = pickle.load(f)
+        instance = cls(data['lookback'], data['forecast'])
+        instance.model = data['model']
+        return instance
 
 
 class RandomForestForecaster:
