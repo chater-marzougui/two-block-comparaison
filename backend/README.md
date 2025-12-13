@@ -49,7 +49,7 @@ The API will be available at `http://localhost:5000`
 
 ### Time Series
 - `GET /api/timeseries` - Get time series data
-  - Query params: `month`, `start_date`, `end_date`, `aggregation` (daily/hourly/weekly)
+  - Query params: `month`, `start_date`, `end_date`, `aggregation` (daily/hourly/weekly/monthly)
 
 ### Insights
 - `GET /api/insights` - Get key insights

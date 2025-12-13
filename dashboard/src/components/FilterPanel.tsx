@@ -85,12 +85,13 @@ const FilterPanel: React.FC = () => {
           <label>Time Aggregation</label>
           <select
             value={filters.aggregation}
-            onChange={(e) => setAggregation(e.target.value as 'daily' | 'hourly' | 'weekly')}
+            onChange={(e) => setAggregation(e.target.value as 'daily' | 'hourly' | 'weekly' | 'monthly')}
             disabled={loading}
           >
             <option value="hourly">Hourly</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
           </select>
         </div>
       </div>

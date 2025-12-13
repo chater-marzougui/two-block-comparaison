@@ -146,7 +146,7 @@ export async function getTimeSeriesData(params?: {
   month?: string;
   startDate?: string;
   endDate?: string;
-  aggregation?: 'daily' | 'hourly' | 'weekly';
+  aggregation?: 'daily' | 'hourly' | 'weekly' | 'monthly';
 }): Promise<ApiResponse<TimeSeriesData[]>> {
   const query = new URLSearchParams();
   if (params?.month) query.append('month', params.month);

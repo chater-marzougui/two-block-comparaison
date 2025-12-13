@@ -426,6 +426,10 @@ def get_timeseries_data():
         resampled_a = filtered_a.resample('W').mean()
         resampled_b = filtered_b.resample('W').mean()
         date_format = '%Y-%m-%d'
+    elif aggregation == 'monthly':
+        resampled_a = filtered_a.resample('M').mean()
+        resampled_b = filtered_b.resample('M').mean()
+        date_format = '%Y-%m'
     else:  # daily
         resampled_a = filtered_a.resample('D').mean()
         resampled_b = filtered_b.resample('D').mean()

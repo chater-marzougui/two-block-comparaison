@@ -884,69 +884,80 @@ def main():
     
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
-    
-    # =========================================
-    # Step 1: Load all data
-    # =========================================
-    print("\n[1/6] Loading data from CSV files...")
-    df = load_all_data(data_dir)
-    
-    if df is None or len(df) == 0:
-        print("Error: No data could be loaded!")
-        return
+    if os.exists(os.path.join(output_dir, "tour_a_processed.csv")) and os.exists(os.path.join(output_dir, "tour_b_processed.csv")):
+        # =========================================
+        # Step 1: Load pre-processed data
+        # =========================================
+        print("\n[1/6] Loading pre-processed data...")
+        df_tour_a = pd.read_csv(os.path.join(output_dir, "tour_a_processed.csv"), index_col=0, parse_dates=True)
+        df_tour_b = pd.read_csv(os.path.join(output_dir, "tour_b_processed.csv"), index_col=0, parse_dates=True)
+        
+        print(f"Tour A data loaded: {len(df_tour_a)} records, {len(df_tour_a.columns)} columns")
+        print(f"Tour B data loaded: {len(df_tour_b)} records, {len(df_tour_b.columns)} columns")
+    else:
+        # =========================================
+        # Step 1: Load all data
+        # =========================================
+        print("\n[1/6] Loading data from CSV files...")
+        df = load_all_data(data_dir)
+        
+        if df is None or len(df) == 0:
+            print("Error: No data could be loaded!")
+            return
 
-    # Sort by index and drop rows with NaT in index
-    df = df[df.index.notna()]
-    df = df.sort_index()
+        # Sort by index and drop rows with NaT in index
+        df = df[df.index.notna()]
+        df = df.sort_index()
 
-    
-    print(f"Data loaded: {len(df)} records, {len(df.columns)} columns")
-    print(f"Date range: {df.index.min()} to {df.index.max()}")
-    
-    # =========================================
-    # Step 2: Extract Tour A and Tour B data
-    # =========================================
-    print("\n[2/6] Extracting Tour A and Tour B data...")
-    
-    tour_a_cols = get_tour_columns(df, 'A')
-    tour_b_cols = get_tour_columns(df, 'B')
-    
-    print(f"Tour A columns: {len(tour_a_cols)}")
-    print(f"Tour B columns: {len(tour_b_cols)}")
-    
-    df_tour_a = extract_tour_data(df, 'A')
-    df_tour_b = extract_tour_data(df, 'B')
+        
+        print(f"Data loaded: {len(df)} records, {len(df.columns)} columns")
+        print(f"Date range: {df.index.min()} to {df.index.max()}")
+        
+        # =========================================
+        # Step 2: Extract Tour A and Tour B data
+        # =========================================
+        print("\n[2/6] Extracting Tour A and Tour B data...")
+        
+        tour_a_cols = get_tour_columns(df, 'A')
+        tour_b_cols = get_tour_columns(df, 'B')
+        
+        print(f"Tour A columns: {len(tour_a_cols)}")
+        print(f"Tour B columns: {len(tour_b_cols)}")
+        
+        df_tour_a = extract_tour_data(df, 'A')
+        df_tour_b = extract_tour_data(df, 'B')
+        
+        # =========================================
+        # Step 3: Data cleaning and quality report
+        # =========================================
+        print("\n[3/6] Cleaning data and generating quality report...")
+        
+        df_tour_a = clean_numeric_data(df_tour_a)
+        df_tour_b = clean_numeric_data(df_tour_b)
+        
+        quality_a = get_data_quality_report(df_tour_a)
+        quality_b = get_data_quality_report(df_tour_b)
+        
+        print(f"\nTour A Data Quality:")
+        print(f"  - Records: {quality_a['total_records']}")
+        print(f"  - Missing values: {quality_a['missing_percentage']:.2f}%")
+        print(f"  - Date range: {quality_a['date_range']}")
+        
+        print(f"\nTour B Data Quality:")
+        print(f"  - Records: {quality_b['total_records']}")
+        print(f"  - Missing values: {quality_b['missing_percentage']:.2f}%")
+        print(f"  - Date range: {quality_b['date_range']}")
+        
+        # Handle missing values
+        df_tour_a = handle_missing_values(df_tour_a)
+        df_tour_b = handle_missing_values(df_tour_b)
+        
     
     metrics_a = get_key_metrics_columns(df, 'A')
     metrics_b = get_key_metrics_columns(df, 'B')
     
     print(f"\nTour A key metrics: {list(metrics_a.keys())}")
     print(f"Tour B key metrics: {list(metrics_b.keys())}")
-    
-    # =========================================
-    # Step 3: Data cleaning and quality report
-    # =========================================
-    print("\n[3/6] Cleaning data and generating quality report...")
-    
-    df_tour_a = clean_numeric_data(df_tour_a)
-    df_tour_b = clean_numeric_data(df_tour_b)
-    
-    quality_a = get_data_quality_report(df_tour_a)
-    quality_b = get_data_quality_report(df_tour_b)
-    
-    print(f"\nTour A Data Quality:")
-    print(f"  - Records: {quality_a['total_records']}")
-    print(f"  - Missing values: {quality_a['missing_percentage']:.2f}%")
-    print(f"  - Date range: {quality_a['date_range']}")
-    
-    print(f"\nTour B Data Quality:")
-    print(f"  - Records: {quality_b['total_records']}")
-    print(f"  - Missing values: {quality_b['missing_percentage']:.2f}%")
-    print(f"  - Date range: {quality_b['date_range']}")
-    
-    # Handle missing values
-    df_tour_a = handle_missing_values(df_tour_a)
-    df_tour_b = handle_missing_values(df_tour_b)
     
     # =========================================
     # Step 4: Perform exploratory data analysis

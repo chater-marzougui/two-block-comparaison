@@ -20,7 +20,7 @@ interface FilterState {
   month: string | null;
   startDate: string | null;
   endDate: string | null;
-  aggregation: 'daily' | 'hourly' | 'weekly';
+  aggregation: 'daily' | 'hourly' | 'weekly' | 'monthly';
   dayOfWeek: number | null;
   year: string | null;
 }
@@ -42,7 +42,7 @@ interface DataContextType extends DataState {
   filters: FilterState;
   setMonth: (month: string | null) => void;
   setDateRange: (start: string | null, end: string | null) => void;
-  setAggregation: (agg: 'daily' | 'hourly' | 'weekly') => void;
+  setAggregation: (agg: 'daily' | 'hourly' | 'weekly' | 'monthly') => void;
   setDayOfWeek: (day: number | null) => void;
   setYear: (year: string | null) => void;
   refreshData: () => void;
@@ -156,7 +156,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     setFilters(prev => ({ ...prev, startDate: start, endDate: end }));
   };
 
-  const setAggregation = (aggregation: 'daily' | 'hourly' | 'weekly') => {
+  const setAggregation = (aggregation: 'daily' | 'hourly' | 'weekly' | 'monthly') => {
     setFilters(prev => ({ ...prev, aggregation }));
   };
 
