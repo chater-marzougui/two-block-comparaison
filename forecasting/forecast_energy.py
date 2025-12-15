@@ -135,17 +135,26 @@ def run_lstm_forecast(X_train, y_train, X_test, y_test, scenario_name, model_pat
         return None
 
 
-def run_prophet_forecast(train_data, test_data, train_dates, test_dates, forecast_steps, scenario_name):
+def run_prophet_forecast(train_data, test_data, train_dates, test_dates, forecast_steps, scenario_name, model_path=None):
     """Run Prophet forecasting."""
     print(f"\n  Running Prophet...")
     
     try:
-        model = ProphetForecaster(
-            lookback_steps=len(train_data),
-            forecast_steps=forecast_steps
-        )
-        
-        model.fit(train_data, train_dates)
+        if model_path and os.path.exists(model_path):
+            print(f"    Loading saved model...")
+            model = ProphetForecaster.load(model_path)
+        else:
+            model = ProphetForecaster(
+                lookback_steps=len(train_data),
+                forecast_steps=forecast_steps
+            )
+            
+            model.fit(train_data, train_dates)
+            if model_path:
+                model.save(model_path)
+                print(f"    Model saved to {model_path}")
+            
+            
         predictions = model.predict(test_dates[:forecast_steps])
         
         # Calculate metrics (only for the forecast period)
@@ -207,17 +216,26 @@ def run_elasticnet_forecast(X_train, y_train, X_test, y_test, scenario_name, mod
         return None
 
 
-def run_exponential_smoothing_forecast(train_data, test_data, forecast_steps, scenario_name):
+def run_exponential_smoothing_forecast(train_data, test_data, forecast_steps, scenario_name, model_path=None):
     """Run Exponential Smoothing forecasting."""
     print(f"\n  Running Exponential Smoothing...")
     
     try:
-        model = ExponentialSmoothingForecaster(
-            lookback_steps=len(train_data),
-            forecast_steps=forecast_steps
-        )
-        
-        model.fit(train_data)
+        if model_path and os.path.exists(model_path):
+            print(f"    Loading saved model...")
+            model = ExponentialSmoothingForecaster.load(model_path)
+        else:
+            model = ExponentialSmoothingForecaster(
+                lookback_steps=len(train_data),
+                forecast_steps=forecast_steps
+            )
+            
+            model.fit(train_data)
+            # Save model
+            if model_path:
+                model.save(model_path)
+                print(f"    Model saved to {model_path}")
+                
         predictions = model.predict(forecast_steps)
         
         # Calculate metrics
@@ -339,9 +357,10 @@ def forecast_tour(tour, data_dir, test_percentage, scenarios):
             results.append(result)
         
         # 2. Prophet
+        prophet_path = os.path.join(model_dir, 'prophet.pkl')
         result = run_prophet_forecast(
             train_data, test_data, train_dates, test_dates,
-            forecast_steps, scenario['name']
+            forecast_steps, scenario['name'], prophet_path
         )
         if result:
             results.append(result)
@@ -353,8 +372,9 @@ def forecast_tour(tour, data_dir, test_percentage, scenarios):
             results.append(result)
         
         # 4. Exponential Smoothing
+        exponential_smoothing_path = os.path.join(model_dir, 'exponential_smoothing.pkl')
         result = run_exponential_smoothing_forecast(
-            train_data, test_data, forecast_steps, scenario['name']
+            train_data, test_data, forecast_steps, scenario['name'], exponential_smoothing_path
         )
         if result:
             results.append(result)

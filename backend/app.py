@@ -118,6 +118,20 @@ def load_all_data():
         return _data_cache, _power_a_cache, _power_b_cache
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    cache_folder = os.path.join(base_dir, 'cache')
+    tour_a_file = os.path.join(cache_folder, 'tour_a_processed.csv')
+    tour_b_file = os.path.join(cache_folder, 'tour_b_processed.csv')
+    if os.path.exists(cache_folder) and os.path.exists(tour_a_file) and os.path.exists(tour_b_file):
+        print("Loading cached processed data...")
+        power_a = pd.read_csv(tour_a_file, index_col=0, parse_dates=True)
+        power_b = pd.read_csv(tour_b_file, index_col=0, parse_dates=True)
+        _power_a_cache = power_a['power']
+        _power_b_cache = power_b['power']
+        combined_df = pd.concat([_power_a_cache, _power_b_cache], axis=1)
+        combined_df.columns = ['Tour_A_Power', 'Tour_B_Power']
+        _data_cache = combined_df
+        return _data_cache, _power_a_cache, _power_b_cache
+    
     data_dir = os.path.join(base_dir, "SINERT_DATA_CONCENTRATOR")
 
     data_files = get_data_files(data_dir)
@@ -365,8 +379,8 @@ def get_monthly_data():
     filtered_a = power_a[mask]
     filtered_b = power_b[mask]
 
-    monthly_a = filtered_a.resample('Me').mean()
-    monthly_b = filtered_b.resample('Me').mean()
+    monthly_a = filtered_a.resample('ME').mean()
+    monthly_b = filtered_b.resample('ME').mean()
 
     all_months = monthly_a.index.union(monthly_b.index)
     monthly_data = []

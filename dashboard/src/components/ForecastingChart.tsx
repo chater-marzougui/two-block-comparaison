@@ -151,7 +151,12 @@ const ForecastingChart: React.FC = () => {
               borderRadius: '8px',
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
             }}
-            formatter={(value: number | null) => [`${value !== null ? value.toFixed(2) : 'N/A'} kW`, '']}
+            formatter={(value) => {
+              if (typeof value === 'number') {
+                return [`${value.toFixed(2)} kW`, ''];
+              }
+              return ['N/A', ''];
+            }}
             labelFormatter={(label) => new Date(label).toLocaleDateString()}
           />
           <Legend />
