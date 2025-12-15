@@ -25,13 +25,10 @@ const ForecastingChart: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scenario, setScenario] = useState<'1_week' | '1_month'>('1_week');
-  const [modelInfo, setModelInfo] = useState<{ tourA: string; tourB: string }>({
-    tourA: '',
-    tourB: '',
-  });
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenario]);
 
   const loadData = async () => {
@@ -59,10 +56,6 @@ const ForecastingChart: React.FC = () => {
       }
 
       setData(combinedData);
-      setModelInfo({
-        tourA: response.tourA.model,
-        tourB: response.tourB.model,
-      });
       setError(null);
     } catch (err) {
       setError('Failed to load forecasting data');

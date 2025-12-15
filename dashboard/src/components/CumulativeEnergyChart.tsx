@@ -30,6 +30,7 @@ const CumulativeEnergyChart: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, aggregation]);
 
   const loadData = async () => {
