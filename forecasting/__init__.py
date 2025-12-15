@@ -14,7 +14,7 @@ from .models import (
     ProphetForecaster,
     ElasticNetForecaster,
     ExponentialSmoothingForecaster,
-    RandomForestForecaster,
+    ExtraTreesForecaster,
     calculate_metrics,
     prepare_sequences
 )
@@ -28,7 +28,7 @@ __all__ = [
     'ProphetForecaster',
     'ElasticNetForecaster',
     'ExponentialSmoothingForecaster',
-    'RandomForestForecaster',
+    'ExtraTreesForecaster',
     'calculate_metrics',
     'prepare_sequences'
 ]

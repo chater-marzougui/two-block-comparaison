@@ -189,13 +189,13 @@ When testing (`TEST_PERCENTAGE < 0.1`):
 You can import and use models directly:
 
 ```python
-from forecasting import RandomForestForecaster, prepare_sequences, calculate_metrics
+from forecasting import ExtraTreesForecaster, prepare_sequences, calculate_metrics
 
 # Prepare your data
 X_train, y_train = prepare_sequences(train_data, lookback=96, forecast=48)
 
 # Train model
-model = RandomForestForecaster(lookback_steps=96, forecast_steps=48)
+model = ExtraTreesForecaster(lookback_steps=96, forecast_steps=48)
 model.fit(X_train, y_train)
 
 # Predict

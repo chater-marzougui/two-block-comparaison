@@ -10,12 +10,12 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from data_loader import load_tour_data, prepare_forecasting_data
-from models import RandomForestForecaster, prepare_sequences, calculate_metrics
+from models import ExtraTreesForecaster, prepare_sequences, calculate_metrics
 
 def simple_forecast_example():
     """
     Simple example of using the forecasting module.
-    This uses only Random Forest for quick testing.
+    This uses only Extra Trees for quick testing.
     """
     print("="*60)
     print("SIMPLE FORECASTING EXAMPLE")
@@ -74,9 +74,9 @@ def simple_forecast_example():
         print("\n⚠️  Not enough test data. Try increasing TEST_PERCENTAGE.")
         return
     
-    # Train Random Forest model
-    print("\nTraining Random Forest model...")
-    model = RandomForestForecaster(lookback_steps, forecast_steps)
+    # Train Extra Trees model
+    print("\nTraining Extra Trees model...")
+    model = ExtraTreesForecaster(lookback_steps, forecast_steps)
     model.fit(X_train, y_train)
     
     # Make predictions

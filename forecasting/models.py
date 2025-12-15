@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pickle
 import os
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.linear_model import ElasticNet
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -40,15 +40,28 @@ def prepare_sequences(data, lookback_steps, forecast_steps):
 
 def calculate_metrics(y_true, y_pred):
     """Calculate evaluation metrics."""
-    mae = mean_absolute_error(y_true, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-    r2 = r2_score(y_true, y_pred)
+    # Remove NaN values from both arrays
+    mask_valid = ~(np.isnan(y_true) | np.isnan(y_pred))
+    y_true_clean = y_true[mask_valid]
+    y_pred_clean = y_pred[mask_valid]
+    
+    if len(y_true_clean) == 0:
+        return {
+            'MAE': np.nan,
+            'RMSE': np.nan,
+            'R2': np.nan,
+            'MAPE': np.nan
+        }
+    
+    mae = mean_absolute_error(y_true_clean, y_pred_clean)
+    rmse = np.sqrt(mean_squared_error(y_true_clean, y_pred_clean))
+    r2 = r2_score(y_true_clean, y_pred_clean)
     
     # Calculate MAPE only for non-zero values to avoid division issues
     # Filter out values where y_true is very small (< 1.0)
-    mask = np.abs(y_true) > 1.0
+    mask = np.abs(y_true_clean) > 1.0
     if mask.sum() > 0:
-        mape = np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
+        mape = np.mean(np.abs((y_true_clean[mask] - y_pred_clean[mask]) / y_true_clean[mask])) * 100
     else:
         mape = np.nan
     
@@ -103,6 +116,11 @@ class LSTMForecaster:
         
     def predict(self, X_test):
         """Make predictions."""
+        # Check for NaN in input
+        if np.isnan(X_test).any():
+            # Replace NaN with mean of non-NaN values
+            X_test = np.where(np.isnan(X_test), np.nanmean(X_test), X_test)
+        
         # Scale test data
         X_test_scaled = self.scaler.transform(X_test.reshape(-1, 1)).reshape(X_test.shape)
         
@@ -112,12 +130,16 @@ class LSTMForecaster:
         # Predict
         predictions = self.model.predict(X_test_reshaped, verbose=0)
         
+        # Handle NaN in predictions
+        if np.isnan(predictions).any():
+            predictions = np.where(np.isnan(predictions), 0, predictions)
+        
         return predictions
     
     def save(self, filepath):
         """Save model to file."""
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        self.model.save(filepath.replace('.pkl', '.h5'))
+        self.model.save(filepath.replace('.pkl', '.keras'))
         with open(filepath, 'wb') as f:
             pickle.dump({'scaler': self.scaler, 'lookback': self.lookback_steps, 'forecast': self.forecast_steps}, f)
     
@@ -129,7 +151,24 @@ class LSTMForecaster:
             data = pickle.load(f)
         instance = cls(data['lookback'], data['forecast'])
         instance.scaler = data['scaler']
-        instance.model = keras_load(filepath.replace('.pkl', '.h5'))
+        
+        # Try loading .keras format first, fall back to .h5
+        keras_path = filepath.replace('.pkl', '.keras')
+        h5_path = filepath.replace('.pkl', '.h5')
+        
+        try:
+            if os.path.exists(keras_path):
+                instance.model = keras_load(keras_path, compile=False)
+            elif os.path.exists(h5_path):
+                instance.model = keras_load(h5_path, compile=False)
+            else:
+                raise FileNotFoundError(f"No model file found at {keras_path} or {h5_path}")
+            
+            # Recompile with current Keras version
+            instance.model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+        except Exception as e:
+            raise Exception(f"Failed to load LSTM model: {e}")
+        
         return instance
 
 
@@ -290,8 +329,8 @@ class ExponentialSmoothingForecaster:
         return instance
 
 
-class RandomForestForecaster:
-    """Random Forest model for time series forecasting."""
+class ExtraTreesForecaster:
+    """Extra Trees model for time series forecasting."""
     
     def __init__(self, lookback_steps, forecast_steps):
         self.lookback_steps = lookback_steps
@@ -307,7 +346,7 @@ class RandomForestForecaster:
         # Train a separate model for each forecast step
         self.models = []
         for i in range(self.forecast_steps):
-            model = RandomForestRegressor(
+            model = ExtraTreesRegressor(
                 n_estimators=100,
                 max_depth=20,
                 min_samples_split=5,
@@ -330,3 +369,19 @@ class RandomForestForecaster:
             predictions.append(pred)
         
         return np.array(predictions).T
+    
+    def save(self, filepath):
+        """Save model to file."""
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'wb') as f:
+            pickle.dump({'models': self.models, 'scaler': self.scaler, 'lookback': self.lookback_steps, 'forecast': self.forecast_steps}, f)
+    
+    @classmethod
+    def load(cls, filepath):
+        """Load model from file."""
+        with open(filepath, 'rb') as f:
+            data = pickle.load(f)
+        instance = cls(data['lookback'], data['forecast'])
+        instance.models = data['models']
+        instance.scaler = data['scaler']
+        return instance
