@@ -368,3 +368,92 @@ export async function getComparisonMetrics(params?: {
   const queryString = query.toString();
   return fetchJson(`${API_BASE_URL}/comparison${queryString ? '?' + queryString : ''}`);
 }
+
+// Cumulative Energy API
+export interface CumulativeEnergyData {
+  date: string;
+  tourA: number;
+  tourB: number;
+}
+
+export interface CumulativeEnergyResponse {
+  data: CumulativeEnergyData[];
+  filters: {
+    startDate?: string;
+    endDate?: string;
+    aggregation: string;
+  };
+  summary: {
+    tourATotal: number;
+    tourBTotal: number;
+  };
+}
+
+export async function fetchCumulativeEnergy(params?: {
+  start_date?: string;
+  end_date?: string;
+  aggregation?: 'hourly' | 'daily' | 'weekly';
+}): Promise<CumulativeEnergyResponse> {
+  const query = new URLSearchParams();
+  if (params?.start_date) query.append('start_date', params.start_date);
+  if (params?.end_date) query.append('end_date', params.end_date);
+  if (params?.aggregation) query.append('aggregation', params.aggregation);
+  
+  const queryString = query.toString();
+  return fetchJson(`${API_BASE_URL}/cumulative-energy${queryString ? '?' + queryString : ''}`);
+}
+
+// Forecasting API
+export interface ForecastingTourData {
+  predicted: (number | null)[];
+  actual: (number | null)[];
+  dates: string[];
+  model: string;
+}
+
+export interface ForecastingResponse {
+  scenario: string;
+  tourA: ForecastingTourData;
+  tourB: ForecastingTourData;
+  filters: {
+    startDate?: string;
+    endDate?: string;
+  };
+}
+
+export async function fetchForecasting(params?: {
+  scenario?: '1_week' | '1_month';
+  start_date?: string;
+  end_date?: string;
+}): Promise<ForecastingResponse> {
+  const query = new URLSearchParams();
+  if (params?.scenario) query.append('scenario', params.scenario);
+  if (params?.start_date) query.append('start_date', params.start_date);
+  if (params?.end_date) query.append('end_date', params.end_date);
+  
+  const queryString = query.toString();
+  return fetchJson(`${API_BASE_URL}/forecasting${queryString ? '?' + queryString : ''}`);
+}
+
+// Test Data Validation API
+export interface TestDataValidationResponse {
+  testDataInfo: {
+    dateRange: {
+      start: string;
+      end: string;
+    };
+    totalDays: number;
+  };
+  tourA: {
+    dates: string[];
+    actual: (number | null)[];
+  };
+  tourB: {
+    dates: string[];
+    actual: (number | null)[];
+  };
+}
+
+export async function fetchTestDataValidation(): Promise<TestDataValidationResponse> {
+  return fetchJson(`${API_BASE_URL}/test-data-validation`);
+}

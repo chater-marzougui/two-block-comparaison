@@ -16,6 +16,8 @@ import DistributionChart from './components/DistributionChart';
 import PeakAnalysisChart from './components/PeakAnalysisChart';
 import ComparisonMetrics from './components/ComparisonMetrics';
 import DataQualityCard from './components/DataQualityCard';
+import CumulativeEnergyChart from './components/CumulativeEnergyChart';
+import ForecastingChart from './components/ForecastingChart';
 
 function Dashboard() {
   const { tourA, tourB, dataInfo, error, loading } = useData();
@@ -198,6 +200,16 @@ function Dashboard() {
       {/* Time Series */}
       <section className="timeseries-section">
         <TimeSeriesChart />
+      </section>
+
+      {/* Cumulative Energy - New Feature */}
+      <section className="cumulative-energy-section">
+        <CumulativeEnergyChart />
+      </section>
+
+      {/* Forecasting - New Feature */}
+      <section className="forecasting-section">
+        <ForecastingChart />
       </section>
 
       {/* Efficiency Metrics */}
