@@ -1,0 +1,1148 @@
+"""
+API route handlers for Power Consumption Dashboard
+"""
+
+import os
+import sys
+import pickle
+from flask import Blueprint, jsonify, request
+import pandas as pd
+import numpy as np
+
+from config import INTERVAL_HOURS
+from data_loader import load_all_data, get_data_files, load_single_file, get_power_column, clean_power_data
+
+# Create Blueprint
+api = Blueprint('api', __name__)
+
+
+# ============================================================================
+# API ENDPOINTS
+# ============================================================================
+
+@api.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    return jsonify({'status': 'ok', 'message': 'Flask API is running'})
+
+
+@api.route('/data-info', methods=['GET'])
+def get_data_info():
+    """Get information about available data."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Get available months
+    months = df.index.to_period('M').unique().astype(str).tolist()
+
+    return jsonify({
+        'totalRecords': len(df),
+        'dateRange': {
+            'start': str(df.index.min()),
+            'end': str(df.index.max())
+        },
+        'availableMonths': months,
+        'tourACoverage': round(100 * power_a.notna().mean(), 1) if power_a is not None else 0,
+        'tourBCoverage': round(100 * power_b.notna().mean(), 1) if power_b is not None else 0
+    })
+
+
+@api.route('/summary', methods=['GET'])
+def get_summary():
+    """Get summary statistics for Tour A and Tour B."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')  # Format: YYYY-MM
+    start_date = request.args.get('start_date')  # Format: YYYY-MM-DD
+    end_date = request.args.get('end_date')  # Format: YYYY-MM-DD
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    def calc_metrics(power, name):
+        if len(power) == 0:
+            return {
+                'name': name,
+                'avgPower': 0,
+                'maxPower': 0,
+                'minPower': 0,
+                'weekdayAvg': 0,
+                'weekendAvg': 0,
+                'dataCoverage': 0,
+                'loadFactor': 0,
+                'peakToAvgRatio': 0,
+                'totalEnergyKwh': 0,
+                'estimatedDailyKwh': 0,
+                'estimatedMonthlyKwh': 0
+            }
+
+        avg = power.mean()
+        max_val = power.max()
+        min_val = power[power > 0].min() if (power > 0).any() else 0
+        weekday_avg = power[power.index.dayofweek < 5].mean()
+        weekend_avg = power[power.index.dayofweek >= 5].mean()
+        load_factor = avg / max_val if max_val > 0 else 0
+        peak_to_avg = max_val / avg if avg > 0 else 0
+        total_energy = (power.fillna(0) * 0.25).sum()  # 15-min intervals
+
+        return {
+            'name': name,
+            'avgPower': round(avg, 2),
+            'maxPower': round(max_val, 2),
+            'minPower': round(min_val, 2),
+            'weekdayAvg': round(weekday_avg, 2) if not pd.isna(weekday_avg) else 0,
+            'weekendAvg': round(weekend_avg, 2) if not pd.isna(weekend_avg) else 0,
+            'dataCoverage': round(100 * len(power) / len(mask[mask]), 1) if mask.sum() > 0 else 0,
+            'loadFactor': round(load_factor, 3),
+            'peakToAvgRatio': round(peak_to_avg, 2),
+            'totalEnergyKwh': round(total_energy, 0),
+            'estimatedDailyKwh': round(avg * 24, 1),
+            'estimatedMonthlyKwh': round(avg * 24 * 30, 0)
+        }
+
+    return jsonify({
+        'tourA': calc_metrics(filtered_a, 'Tour A'),
+        'tourB': calc_metrics(filtered_b, 'Tour B'),
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    })
+
+
+@api.route('/hourly', methods=['GET'])
+def get_hourly_data():
+    """Get hourly consumption patterns."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    day_of_week = request.args.get('day_of_week')  # 0-6 (Monday-Sunday)
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if day_of_week is not None:
+        mask &= df.index.dayofweek == int(day_of_week)
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    hourly_a = filtered_a.groupby(filtered_a.index.hour).mean()
+    hourly_b = filtered_b.groupby(filtered_b.index.hour).mean()
+
+    hourly_data = []
+    for hour in range(24):
+        a_val = hourly_a.get(hour, 0)
+        b_val = hourly_b.get(hour, 0)
+        a_val = 0 if pd.isna(a_val) else round(a_val, 2)
+        b_val = 0 if pd.isna(b_val) else round(b_val, 2)
+        hourly_data.append({
+            'hour': hour,
+            'tourA': a_val,
+            'tourB': b_val,
+            'difference': round(b_val - a_val, 2)
+        })
+
+    return jsonify({
+        'data': hourly_data,
+        'filters': {
+            'month': month,
+            'dayOfWeek': day_of_week
+        }
+    })
+
+
+@api.route('/weekly', methods=['GET'])
+def get_weekly_data():
+    """Get weekly consumption patterns."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    weekly_a = filtered_a.groupby(filtered_a.index.dayofweek).mean()
+    weekly_b = filtered_b.groupby(filtered_b.index.dayofweek).mean()
+
+    weekly_data = []
+    for i, day in enumerate(days):
+        a_val = weekly_a.get(i, 0)
+        b_val = weekly_b.get(i, 0)
+        a_val = 0 if pd.isna(a_val) else round(a_val, 2)
+        b_val = 0 if pd.isna(b_val) else round(b_val, 2)
+        weekly_data.append({
+            'day': day,
+            'dayIndex': i,
+            'tourA': a_val,
+            'tourB': b_val
+        })
+
+    return jsonify({
+        'data': weekly_data,
+        'filters': {
+            'month': month
+        }
+    })
+
+
+@api.route('/monthly', methods=['GET'])
+def get_monthly_data():
+    """Get monthly consumption trends."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    year = request.args.get('year')  # Filter by year
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if year:
+        mask &= df.index.year == int(year)
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    monthly_a = filtered_a.resample('ME').mean()
+    monthly_b = filtered_b.resample('ME').mean()
+
+    all_months = monthly_a.index.union(monthly_b.index)
+    monthly_data = []
+    for month in sorted(all_months):
+        a_val = monthly_a.get(month, 0)
+        b_val = monthly_b.get(month, 0)
+        a_val = 0 if pd.isna(a_val) else round(a_val, 2)
+        b_val = 0 if pd.isna(b_val) else round(b_val, 2)
+        monthly_data.append({
+            'month': month.strftime('%Y-%m'),
+            'monthName': month.strftime('%b %Y'),
+            'tourA': a_val,
+            'tourB': b_val,
+            'tourAEnergy': round(a_val * 24 * 30, 0),
+            'tourBEnergy': round(b_val * 24 * 30, 0)
+        })
+
+    return jsonify({
+        'data': monthly_data,
+        'filters': {
+            'year': year
+        }
+    })
+
+
+@api.route('/timeseries', methods=['GET'])
+def get_timeseries_data():
+    """Get time series data (daily averages)."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    aggregation = request.args.get('aggregation', 'daily')  # daily, hourly, weekly
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    # Resample based on aggregation
+    if aggregation == 'hourly':
+        resampled_a = filtered_a.resample('H').mean()
+        resampled_b = filtered_b.resample('H').mean()
+        date_format = '%Y-%m-%d %H:00'
+    elif aggregation == 'weekly':
+        resampled_a = filtered_a.resample('W').mean()
+        resampled_b = filtered_b.resample('W').mean()
+        date_format = '%Y-%m-%d'
+    elif aggregation == 'monthly':
+        resampled_a = filtered_a.resample('M').mean()
+        resampled_b = filtered_b.resample('M').mean()
+        date_format = '%Y-%m'
+    else:  # daily
+        resampled_a = filtered_a.resample('D').mean()
+        resampled_b = filtered_b.resample('D').mean()
+        date_format = '%Y-%m-%d'
+
+    all_dates = resampled_a.index.union(resampled_b.index)
+    timeseries_data = []
+    for date in sorted(all_dates):
+        a_val = resampled_a.get(date, 0)
+        b_val = resampled_b.get(date, 0)
+        a_val = 0 if pd.isna(a_val) else round(a_val, 2)
+        b_val = 0 if pd.isna(b_val) else round(b_val, 2)
+        timeseries_data.append({
+            'date': date.strftime(date_format),
+            'tourA': a_val,
+            'tourB': b_val
+        })
+
+    return jsonify({
+        'data': timeseries_data,
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date,
+            'aggregation': aggregation
+        }
+    })
+
+
+@api.route('/insights', methods=['GET'])
+def get_insights():
+    """Get key insights based on the data."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    avg_a = filtered_a.mean() if len(filtered_a) > 0 else 0
+    avg_b = filtered_b.mean() if len(filtered_b) > 0 else 0
+
+    efficiency_diff = abs((avg_a - avg_b) / avg_a * 100) if avg_a > 0 else 0
+    more_efficient = 'Tour A' if avg_a < avg_b else 'Tour B'
+
+    weekday_a = filtered_a[filtered_a.index.dayofweek < 5].mean() if len(filtered_a) > 0 else 0
+    weekend_a = filtered_a[filtered_a.index.dayofweek >= 5].mean() if len(filtered_a) > 0 else 0
+    weekday_b = filtered_b[filtered_b.index.dayofweek < 5].mean() if len(filtered_b) > 0 else 0
+    weekend_b = filtered_b[filtered_b.index.dayofweek >= 5].mean() if len(filtered_b) > 0 else 0
+
+    weekend_savings_a = ((weekday_a - weekend_a) / weekday_a * 100) if weekday_a > 0 else 0
+    weekend_savings_b = ((weekday_b - weekend_b) / weekday_b * 100) if weekday_b > 0 else 0
+
+    hourly_a = filtered_a.groupby(filtered_a.index.hour).mean() if len(filtered_a) > 0 else pd.Series()
+    hourly_b = filtered_b.groupby(filtered_b.index.hour).mean() if len(filtered_b) > 0 else pd.Series()
+
+    peak_hour_a = int(hourly_a.idxmax()) if len(hourly_a) > 0 else 0
+    peak_hour_b = int(hourly_b.idxmax()) if len(hourly_b) > 0 else 0
+
+    load_factor_a = avg_a / filtered_a.max() if len(filtered_a) > 0 and filtered_a.max() > 0 else 0
+    load_factor_b = avg_b / filtered_b.max() if len(filtered_b) > 0 and filtered_b.max() > 0 else 0
+
+    insights = [
+        {
+            'title': 'Energy Efficiency',
+            'value': f'{efficiency_diff:.1f}%',
+            'description': f'{more_efficient} uses {efficiency_diff:.1f}% less power on average',
+            'icon': '⚡'
+        },
+        {
+            'title': 'Peak Hour',
+            'value': f'{peak_hour_a}:00 / {peak_hour_b}:00',
+            'description': f'Tour A peaks at {peak_hour_a}:00, Tour B at {peak_hour_b}:00',
+            'icon': '📈'
+        },
+        {
+            'title': 'Weekend Savings',
+            'value': f'{(weekend_savings_a + weekend_savings_b)/2:.0f}%',
+            'description': f'Average weekend consumption drop (A: {weekend_savings_a:.0f}%, B: {weekend_savings_b:.0f}%)',
+            'icon': '📅'
+        },
+        {
+            'title': 'Monthly Usage',
+            'value': f'~{(avg_a + avg_b) * 24 * 30 / 1000:.1f} MWh',
+            'description': 'Combined monthly consumption estimate',
+            'icon': '🔌'
+        },
+        {
+            'title': 'Load Factor',
+            'value': f'{load_factor_a:.2f} / {load_factor_b:.2f}',
+            'description': 'Load factor comparison (A / B). Higher is better.',
+            'icon': '📊'
+        },
+        {
+            'title': 'Data Coverage',
+            'value': f'{100*len(filtered_a)/len(mask[mask]):.0f}% / {100*len(filtered_b)/len(mask[mask]):.0f}%' if mask.sum() > 0 else '0% / 0%',
+            'description': 'Available data percentage for Tour A / Tour B',
+            'icon': '📁'
+        }
+    ]
+
+    return jsonify({
+        'data': insights,
+        'filters': {
+            'month': month
+        }
+    })
+
+
+@api.route('/heatmap', methods=['GET'])
+def get_heatmap_data():
+    """Get heatmap data (hour vs day of week)."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    def create_heatmap(power_series):
+        heatmap_data = []
+        for day_idx in range(7):
+            day_data = power_series[power_series.index.dayofweek == day_idx]
+            for hour in range(24):
+                hour_data = day_data[day_data.index.hour == hour]
+                val = hour_data.mean() if len(hour_data) > 0 else 0
+                val = 0 if pd.isna(val) else round(val, 2)
+                heatmap_data.append({
+                    'day': days[day_idx],
+                    'dayIndex': day_idx,
+                    'hour': hour,
+                    'value': val
+                })
+        return heatmap_data
+
+    return jsonify({
+        'tourA': create_heatmap(filtered_a),
+        'tourB': create_heatmap(filtered_b),
+        'filters': {
+            'month': month
+        }
+    })
+
+
+@api.route('/distribution', methods=['GET'])
+def get_distribution_data():
+    """Get distribution statistics for power consumption."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    bins = int(request.args.get('bins', 30))  # Number of bins for histogram
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    def calc_distribution(power, name):
+        if len(power) == 0:
+            return {
+                'name': name,
+                'histogram': [],
+                'percentiles': {},
+                'quartiles': {},
+                'statistics': {}
+            }
+
+        # Calculate histogram
+        hist, bin_edges = np.histogram(power, bins=bins)
+        histogram_data = []
+        for i in range(len(hist)):
+            histogram_data.append({
+                'binStart': round(bin_edges[i], 2),
+                'binEnd': round(bin_edges[i + 1], 2),
+                'binCenter': round((bin_edges[i] + bin_edges[i + 1]) / 2, 2),
+                'count': int(hist[i]),
+                'frequency': round(hist[i] / len(power) * 100, 2)
+            })
+
+        # Calculate percentiles
+        percentiles = {
+            'p5': round(np.percentile(power, 5), 2),
+            'p10': round(np.percentile(power, 10), 2),
+            'p25': round(np.percentile(power, 25), 2),
+            'p50': round(np.percentile(power, 50), 2),
+            'p75': round(np.percentile(power, 75), 2),
+            'p90': round(np.percentile(power, 90), 2),
+            'p95': round(np.percentile(power, 95), 2)
+        }
+
+        # Calculate quartiles
+        q1 = np.percentile(power, 25)
+        q2 = np.percentile(power, 50)
+        q3 = np.percentile(power, 75)
+        iqr = q3 - q1
+
+        quartiles = {
+            'q1': round(q1, 2),
+            'q2': round(q2, 2),
+            'q3': round(q3, 2),
+            'iqr': round(iqr, 2),
+            'lowerWhisker': round(max(power.min(), q1 - 1.5 * iqr), 2),
+            'upperWhisker': round(min(power.max(), q3 + 1.5 * iqr), 2)
+        }
+
+        # Calculate statistics
+        statistics = {
+            'mean': round(power.mean(), 2),
+            'median': round(power.median(), 2),
+            'mode': round(power.mode()[0] if len(power.mode()) > 0 else power.median(), 2),
+            'std': round(power.std(), 2),
+            'variance': round(power.var(), 2),
+            'skewness': round(power.skew(), 2),
+            'kurtosis': round(power.kurtosis(), 2),
+            'min': round(power.min(), 2),
+            'max': round(power.max(), 2),
+            'range': round(power.max() - power.min(), 2),
+            'count': len(power)
+        }
+
+        return {
+            'name': name,
+            'histogram': histogram_data,
+            'percentiles': percentiles,
+            'quartiles': quartiles,
+            'statistics': statistics
+        }
+
+    return jsonify({
+        'tourA': calc_distribution(filtered_a, 'Tour A'),
+        'tourB': calc_distribution(filtered_b, 'Tour B'),
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date,
+            'bins': bins
+        }
+    })
+
+
+@api.route('/peak-analysis', methods=['GET'])
+def get_peak_analysis():
+    """Get peak and off-peak hours analysis."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    top_n = int(request.args.get('top_n', 5))
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    def analyze_peaks(power, name):
+        if len(power) == 0:
+            return {
+                'name': name,
+                'peakHours': [],
+                'offPeakHours': [],
+                'dailyPeaks': {
+                    'mean': 0,
+                    'median': 0,
+                    'max': 0,
+                    'min': 0,
+                    'distribution': []
+                }
+            }
+
+        # Hourly averages
+        hourly_avg = power.groupby(power.index.hour).mean()
+
+        # Peak hours (top N)
+        peak_hours = hourly_avg.nlargest(top_n)
+        peak_hours_data = [
+            {
+                'hour': int(hour),
+                'avgPower': round(val, 2),
+                'timeLabel': f'{hour}:00'
+            }
+            for hour, val in peak_hours.items()
+        ]
+
+        # Off-peak hours (bottom N)
+        off_peak_hours = hourly_avg.nsmallest(top_n)
+        off_peak_hours_data = [
+            {
+                'hour': int(hour),
+                'avgPower': round(val, 2),
+                'timeLabel': f'{hour}:00'
+            }
+            for hour, val in off_peak_hours.items()
+        ]
+
+        # Daily peak analysis
+        daily_max = power.resample('D').max()
+        daily_peaks_hist, bins = np.histogram(daily_max.dropna(), bins=20)
+        daily_peaks_distribution = [
+            {
+                'binStart': round(bins[i], 2),
+                'binEnd': round(bins[i + 1], 2),
+                'count': int(daily_peaks_hist[i])
+            }
+            for i in range(len(daily_peaks_hist))
+        ]
+
+        return {
+            'name': name,
+            'peakHours': peak_hours_data,
+            'offPeakHours': off_peak_hours_data,
+            'dailyPeaks': {
+                'mean': round(daily_max.mean(), 2),
+                'median': round(daily_max.median(), 2),
+                'max': round(daily_max.max(), 2),
+                'min': round(daily_max.min(), 2),
+                'distribution': daily_peaks_distribution
+            }
+        }
+
+    return jsonify({
+        'tourA': analyze_peaks(filtered_a, 'Tour A'),
+        'tourB': analyze_peaks(filtered_b, 'Tour B'),
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date,
+            'topN': top_n
+        }
+    })
+
+
+@api.route('/data-quality', methods=['GET'])
+def get_data_quality():
+    """Get data quality report."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask]
+    filtered_b = power_b[mask]
+
+    def calc_quality(power, name):
+        total_points = len(power)
+        non_null = int(power.notna().sum())
+        null_count = int(power.isna().sum())
+        zero_count = int((power == 0).sum())
+        non_zero_count = int((power > 0).sum())
+
+        return {
+            'name': name,
+            'totalPoints': int(total_points),
+            'validPoints': non_null,
+            'missingPoints': null_count,
+            'zeroPoints': zero_count,
+            'nonZeroPoints': non_zero_count,
+            'completeness': round(non_null / total_points * 100, 2) if total_points > 0 else 0,
+            'validity': round(non_zero_count / total_points * 100, 2) if total_points > 0 else 0,
+            'hasValidReadings': bool(non_zero_count > 0),
+            'issues': []
+        }
+
+    quality_a = calc_quality(filtered_a, 'Tour A')
+    quality_b = calc_quality(filtered_b, 'Tour B')
+
+    # Add issues
+    if quality_a['completeness'] < 50:
+        quality_a['issues'].append('Low data completeness (< 50%)')
+    if quality_a['validity'] < 50:
+        quality_a['issues'].append('Many zero readings (> 50%)')
+    if quality_b['completeness'] < 50:
+        quality_b['issues'].append('Low data completeness (< 50%)')
+    if quality_b['validity'] < 50:
+        quality_b['issues'].append('Many zero readings (> 50%)')
+
+    return jsonify({
+        'tourA': quality_a,
+        'tourB': quality_b,
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    })
+
+
+@api.route('/comparison', methods=['GET'])
+def get_comparison_metrics():
+    """Get detailed comparison metrics between tours."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    month = request.args.get('month')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if month:
+        mask &= df.index.to_period('M').astype(str) == month
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].dropna()
+    filtered_b = power_b[mask].dropna()
+
+    if len(filtered_a) == 0 or len(filtered_b) == 0:
+        return jsonify({'error': 'Insufficient data for comparison'}), 400
+
+    # Align data on common time indices
+    common_index = filtered_a.index.intersection(filtered_b.index)
+    aligned_a = filtered_a[common_index]
+    aligned_b = filtered_b[common_index]
+
+    # Calculate comparison metrics
+    avg_a = aligned_a.mean()
+    avg_b = aligned_b.mean()
+    diff_abs = avg_b - avg_a
+    diff_pct = (diff_abs / avg_a * 100) if avg_a > 0 else 0
+
+    # Correlation
+    correlation = aligned_a.corr(aligned_b) if len(aligned_a) > 1 else 0
+
+    # Hourly comparison
+    hourly_a = aligned_a.groupby(aligned_a.index.hour).mean()
+    hourly_b = aligned_b.groupby(aligned_b.index.hour).mean()
+    hourly_diff = hourly_b - hourly_a
+    max_diff_hour = int(hourly_diff.abs().idxmax()) if len(hourly_diff) > 0 else 0
+    max_diff_value = hourly_diff[max_diff_hour] if len(hourly_diff) > 0 else 0
+
+    # Peak comparison
+    peak_a = aligned_a.max()
+    peak_b = aligned_b.max()
+    peak_diff_pct = ((peak_b - peak_a) / peak_a * 100) if peak_a > 0 else 0
+
+    # Efficiency comparison
+    load_factor_a = avg_a / peak_a if peak_a > 0 else 0
+    load_factor_b = avg_b / peak_b if peak_b > 0 else 0
+    efficiency_winner = 'Tour A' if load_factor_a > load_factor_b else 'Tour B'
+
+    # Time periods when each is higher
+    a_higher_count = (aligned_a > aligned_b).sum()
+    b_higher_count = (aligned_b > aligned_a).sum()
+    a_higher_pct = (a_higher_count / len(aligned_a) * 100) if len(aligned_a) > 0 else 0
+    b_higher_pct = (b_higher_count / len(aligned_b) * 100) if len(aligned_b) > 0 else 0
+
+    return jsonify({
+        'averages': {
+            'tourA': round(avg_a, 2),
+            'tourB': round(avg_b, 2),
+            'difference': round(diff_abs, 2),
+            'differencePercent': round(diff_pct, 2),
+            'moreEfficient': 'Tour A' if avg_a < avg_b else 'Tour B'
+        },
+        'peaks': {
+            'tourA': round(peak_a, 2),
+            'tourB': round(peak_b, 2),
+            'difference': round(peak_b - peak_a, 2),
+            'differencePercent': round(peak_diff_pct, 2)
+        },
+        'correlation': {
+            'value': round(correlation, 3),
+            'strength': 'strong' if abs(correlation) > 0.7 else 'moderate' if abs(correlation) > 0.4 else 'weak',
+            'description': f'{"Positive" if correlation > 0 else "Negative"} correlation between tours'
+        },
+        'loadFactors': {
+            'tourA': round(load_factor_a, 3),
+            'tourB': round(load_factor_b, 3),
+            'winner': efficiency_winner
+        },
+        'timeComparison': {
+            'tourAHigherPercent': round(a_higher_pct, 1),
+            'tourBHigherPercent': round(b_higher_pct, 1),
+            'tourAHigherCount': int(a_higher_count),
+            'tourBHigherCount': int(b_higher_count)
+        },
+        'hourlyComparison': {
+            'maxDifferenceHour': max_diff_hour,
+            'maxDifferenceValue': round(max_diff_value, 2),
+            'maxDifferenceLabel': f'{max_diff_hour}:00'
+        },
+        'dataPoints': {
+            'total': len(aligned_a),
+            'commonTimePoints': len(common_index)
+        },
+        'filters': {
+            'month': month,
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    })
+
+
+@api.route('/cumulative-energy', methods=['GET'])
+def get_cumulative_energy():
+    """Get cumulative energy consumption over time with date range selection."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    aggregation = request.args.get('aggregation', 'hourly')  # hourly, daily, weekly
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].fillna(0)
+    filtered_b = power_b[mask].fillna(0)
+
+    # Calculate cumulative energy (power * time interval in hours)
+    # Assuming 15-minute intervals = 0.25 hours
+    energy_a = (filtered_a * INTERVAL_HOURS).cumsum()
+    energy_b = (filtered_b * INTERVAL_HOURS).cumsum()
+
+    # Resample based on aggregation for smoother visualization
+    if aggregation == 'daily':
+        energy_a = energy_a.resample('D').last()
+        energy_b = energy_b.resample('D').last()
+        date_format = '%Y-%m-%d'
+    elif aggregation == 'weekly':
+        energy_a = energy_a.resample('W').last()
+        energy_b = energy_b.resample('W').last()
+        date_format = '%Y-%m-%d'
+    else:  # hourly
+        energy_a = energy_a.resample('H').last()
+        energy_b = energy_b.resample('H').last()
+        date_format = '%Y-%m-%d %H:00'
+
+    # Combine into response
+    all_dates = energy_a.index.union(energy_b.index)
+    cumulative_data = []
+    for date in sorted(all_dates):
+        a_val = energy_a.get(date, 0)
+        b_val = energy_b.get(date, 0)
+        a_val = 0 if pd.isna(a_val) else round(a_val, 2)
+        b_val = 0 if pd.isna(b_val) else round(b_val, 2)
+        cumulative_data.append({
+            'date': date.strftime(date_format),
+            'tourA': a_val,
+            'tourB': b_val
+        })
+
+    return jsonify({
+        'data': cumulative_data,
+        'filters': {
+            'startDate': start_date,
+            'endDate': end_date,
+            'aggregation': aggregation
+        },
+        'summary': {
+            'tourATotal': round(energy_a.iloc[-1] if len(energy_a) > 0 else 0, 2),
+            'tourBTotal': round(energy_b.iloc[-1] if len(energy_b) > 0 else 0, 2)
+        }
+    })
+
+
+@api.route('/forecasting', methods=['GET'])
+def get_forecasting():
+    """Get forecasting predictions using trained models."""
+    
+    # Add forecasting directory to path
+    forecasting_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'forecasting')
+    sys.path.insert(0, forecasting_dir)
+    
+    try:
+        from models import ExponentialSmoothingForecaster, ElasticNetForecaster, prepare_sequences
+    except ImportError as e:
+        return jsonify({'error': f'Forecasting models not available: {str(e)}'}), 500
+    
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    scenario = request.args.get('scenario', '1_week')  # '1_week' or '1_month'
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].fillna(0)
+    filtered_b = power_b[mask].fillna(0)
+
+    # Aggregate to daily averages for forecasting
+    daily_a = filtered_a.resample('D').mean()
+    daily_b = filtered_b.resample('D').mean()
+
+    results = {
+        'scenario': scenario,
+        'tourA': {'actual': [], 'predicted': [], 'dates': [], 'model': ''},
+        'tourB': {'actual': [], 'predicted': [], 'dates': [], 'model': ''},
+        'filters': {
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    }
+
+    # Determine which model to use and load it
+    if scenario == '1_week':
+        # Use Exponential Smoothing for 1 week forecast
+        model_name = 'exponential_smoothing'
+        lookback_days = 21  # 3 weeks
+        forecast_days = 7   # 1 week
+        model_path_a = os.path.join(forecasting_dir, 'saved_models', 'tour_A', '1_week_after_3_weeks', 'exponential_smoothing.pkl')
+        model_path_b = os.path.join(forecasting_dir, 'saved_models', 'tour_B', '1_week_after_3_weeks', 'exponential_smoothing.pkl')
+        results['tourA']['model'] = 'Exponential Smoothing'
+        results['tourB']['model'] = 'Exponential Smoothing'
+    else:  # '1_month'
+        # Use ElasticNet for 1 month forecast
+        model_name = 'elasticnet'
+        lookback_days = 90  # 3 months
+        forecast_days = 30  # 1 month
+        model_path_a = os.path.join(forecasting_dir, 'saved_models', 'tour_A', '1_month_after_3_months', 'elasticnet.pkl')
+        model_path_b = os.path.join(forecasting_dir, 'saved_models', 'tour_B', '1_month_after_3_months', 'elasticnet.pkl')
+        results['tourA']['model'] = 'ElasticNet'
+        results['tourB']['model'] = 'ElasticNet'
+
+    # Function to make predictions
+    def make_predictions(daily_data, model_path, model_type):
+        if len(daily_data) < lookback_days:
+            return [], [], []
+        
+        # Use the last available data for prediction
+        lookback_data = daily_data.values[-lookback_days:]
+        
+        # For ElasticNet, we need exactly lookback_days features
+        # Fill NaN values with forward fill then backward fill
+        if model_type == 'elasticnet':
+            # Use pandas to handle NaN filling properly
+            temp_series = pd.Series(lookback_data)
+            temp_series = temp_series.ffill().bfill().fillna(temp_series.mean())
+            lookback_data = temp_series.values
+        else:
+            # For exponential smoothing, remove NaN values
+            lookback_data = lookback_data[~np.isnan(lookback_data)]
+            if len(lookback_data) < 7:
+                return [], [], []
+        
+        try:
+            if model_type == 'exponential_smoothing':
+                # Use exponential smoothing on-the-fly
+                if os.path.exists(model_path):
+                    try:
+                        model = ExponentialSmoothingForecaster.load(model_path)
+                        predictions = model.predict(forecast_days)
+                    except:
+                        # If model loading fails, use simple exponential smoothing
+                        from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+                        series = pd.Series(lookback_data)
+                        ses_model = SimpleExpSmoothing(series).fit()
+                        predictions = ses_model.forecast(steps=forecast_days).values
+                else:
+                    # Train exponential smoothing on-the-fly if model doesn't exist
+                    from statsmodels.tsa.holtwinters import ExponentialSmoothing
+                    series = pd.Series(lookback_data)
+                    try:
+                        # Try with weekly seasonality
+                        es_model = ExponentialSmoothing(
+                            series,
+                            seasonal_periods=7,
+                            trend='add',
+                            seasonal='add',
+                            use_boxcox=False
+                        ).fit()
+                        predictions = es_model.forecast(steps=forecast_days).values
+                    except:
+                        # Fallback to simple exponential smoothing
+                        from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+                        ses_model = SimpleExpSmoothing(series).fit()
+                        predictions = ses_model.forecast(steps=forecast_days).values
+            elif model_type == 'elasticnet' and os.path.exists(model_path):
+                model = ElasticNetForecaster.load(model_path)
+                X_test = lookback_data[-lookback_days:].reshape(1, -1)  # Use lookback period
+                predictions = model.predict(X_test)[0]
+            else:
+                # If no saved model, use simple moving average as fallback
+                predictions = np.full(forecast_days, lookback_data[-7:].mean())
+            
+            # Check for NaN in predictions and replace with moving average
+            if np.any(np.isnan(predictions)):
+                predictions = np.full(forecast_days, lookback_data[-7:].mean())
+            
+            # Generate future dates
+            last_date = daily_data.index[-1]
+            future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=forecast_days, freq='D')
+            
+            # Get actual values if they exist (for test-weeks data validation)
+            actual_values = []
+            for date in future_dates:
+                if date in daily_data.index:
+                    actual_values.append(daily_data[date])
+                else:
+                    actual_values.append(None)
+            
+            return predictions.tolist(), actual_values, [d.strftime('%Y-%m-%d') for d in future_dates]
+        except Exception as e:
+            print(f"Error making predictions: {e}")
+            import traceback
+            traceback.print_exc()
+            return [], [], []
+
+    # Make predictions for both tours
+    pred_a, actual_a, dates_a = make_predictions(daily_a, model_path_a, model_name)
+    pred_b, actual_b, dates_b = make_predictions(daily_b, model_path_b, model_name)
+
+    results['tourA']['predicted'] = [round(p, 2) if p is not None else None for p in pred_a]
+    results['tourA']['actual'] = [round(a, 2) if a is not None and not pd.isna(a) else None for a in actual_a]
+    results['tourA']['dates'] = dates_a
+    
+    results['tourB']['predicted'] = [round(p, 2) if p is not None else None for p in pred_b]
+    results['tourB']['actual'] = [round(a, 2) if a is not None and not pd.isna(a) else None for a in actual_b]
+    results['tourB']['dates'] = dates_b
+
+    return jsonify(results)
+
+
+@api.route('/test-data-validation', methods=['GET'])
+def get_test_data_validation():
+    """Validate forecasting models against test-weeks data."""
+    
+    # Add forecasting directory to path
+    forecasting_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'forecasting')
+    sys.path.insert(0, forecasting_dir)
+    
+    # Load test-weeks data
+    test_data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test-weeks')
+    
+    if not os.path.exists(test_data_dir):
+        return jsonify({'error': 'Test data not found'}), 404
+    
+    test_files = get_data_files(test_data_dir)
+    if not test_files:
+        return jsonify({'error': 'No test files found'}), 404
+    
+    # Load test data
+    all_test_data = []
+    for file_path in test_files:
+        df = load_single_file(file_path)
+        if df is not None:
+            all_test_data.append(df)
+    
+    if not all_test_data:
+        return jsonify({'error': 'Failed to load test data'}), 500
+    
+    test_df = pd.concat(all_test_data, ignore_index=False)
+    test_df = test_df[test_df.index.notna()]
+    test_df = test_df.sort_index()
+    
+    # Get power columns for test data
+    power_col_a = get_power_column(test_df, 'A')
+    power_col_b = get_power_column(test_df, 'B')
+    
+    if not power_col_a or not power_col_b:
+        return jsonify({'error': 'Power columns not found in test data'}), 500
+    
+    test_power_a = clean_power_data(test_df[power_col_a])
+    test_power_b = clean_power_data(test_df[power_col_b])
+    
+    # Aggregate to daily
+    test_daily_a = test_power_a.resample('D').mean()
+    test_daily_b = test_power_b.resample('D').mean()
+    
+    results = {
+        'testDataInfo': {
+            'dateRange': {
+                'start': str(test_df.index.min()),
+                'end': str(test_df.index.max())
+            },
+            'totalDays': len(test_daily_a)
+        },
+        'tourA': {
+            'dates': [d.strftime('%Y-%m-%d') for d in test_daily_a.index],
+            'actual': [round(v, 2) if not pd.isna(v) else None for v in test_daily_a.values]
+        },
+        'tourB': {
+            'dates': [d.strftime('%Y-%m-%d') for d in test_daily_b.index],
+            'actual': [round(v, 2) if not pd.isna(v) else None for v in test_daily_b.values]
+        }
+    }
+    
+    return jsonify(results)

@@ -7,7 +7,7 @@
   --background-color: #f3f4f6;
   --card-bg: #ffffff;
   --text-primary: #111827;
-  --text-secondary: #6b7280;
+  --text-secondary: #374151; /* Darkened from #6b7280 for better contrast */
   --border-color: #e5e7eb;
   --success-color: #059669;
   --warning-color: #d97706;
@@ -229,7 +229,7 @@ body {
 }
 
 .insight-card {
-  background: #f8fafc;
+  background: #ffffff; /* Changed from #f8fafc to white for better contrast */
   padding: 1.5rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
@@ -238,7 +238,7 @@ body {
 }
 
 .insight-card:hover {
-  background: #fff;
+  background: #ffffff;
   box-shadow: var(--shadow-md);
   border-color: var(--primary-color);
 }
@@ -509,11 +509,14 @@ body {
   margin-bottom: 2rem;
 }
 
+/* REMOVED conflicting .metric-card style that was enforcing dark background in light mode */
+/* 
 .metric-card {
   background: rgba(31, 41, 55, 0.5);
   border-radius: var(--radius-lg);
   padding: 20px;
 }
+*/
 
 .metric-header {
   display: flex;
@@ -542,7 +545,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(75, 85, 99, 0.2);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5); /* Lighter border */
 }
 
 .comparison-row:last-child {
@@ -559,13 +562,13 @@ body {
 
 .tour-label {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-secondary); /* Use variable */
 }
 
 .tour-value {
   font-weight: 600;
   font-size: 15px;
-  color: #e5e7eb;
+  color: var(--text-primary); /* Use primary text */
 }
 
 .comparison-conclusion {
@@ -593,22 +596,23 @@ body {
   justify-content: space-between;
   padding: 6px 0;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-secondary);
 }
 
 .stat-row span {
-  color: #9ca3af;
+  color: var(--text-secondary);
 }
 
 .stat-row strong {
-  color: #e5e7eb;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .off-peak-section {
   padding: 20px;
-  background: rgba(31, 41, 55, 0.3);
+  background: var(--card-bg); /* Use card-bg */
   border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
 }
 
 .comparison-grid .metric-card.full-width {
@@ -617,6 +621,7 @@ body {
 
 .quality-card {
   padding: 20px;
-  background: rgba(31, 41, 55, 0.3);
+  background: var(--card-bg); /* Use card-bg */
   border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
 }

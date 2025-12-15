@@ -9,9 +9,6 @@ This enhanced version adds:
 - Energy cost estimation
 - Power quality metrics
 - Comprehensive JSON export for React dashboard
-
-Author: Data Analysis Script
-Date: November 2024
 """
 
 import os
@@ -787,10 +784,6 @@ export const keyInsights: KeyInsight[] = {json.dumps(dashboard_data['keyInsights
 // Date range
 export const dateRange = {json.dumps(dashboard_data['dateRange'], indent=2)};
 '''
-        ts_path = os.path.join(react_data_dir, "powerData.ts")
-        with open(ts_path, 'w') as f:
-            f.write(ts_content)
-        print(f"React data exported to: {ts_path}")
     
     print("\n" + "=" * 60)
     print("DATA EXPLORATION V2 COMPLETE!")

@@ -72,8 +72,6 @@ src/
 │   └── DataContext.tsx  # Global state management
 ├── services/
 │   └── api.ts           # API client
-├── data/
-│   └── powerData.ts     # Static fallback data
 ├── App.tsx              # Main application
 └── App.css              # Global styles
 ```

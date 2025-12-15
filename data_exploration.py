@@ -9,9 +9,6 @@ Meters/Counters Reference (from Metadonnees_13compteurs.pdf):
 - Tour_B_(TGBT_D5): Tour B - Lighting and power outlets
 - CLIM_TOUR_A_(TGBT_D6): Tour A - Heat pump/AC (currently Tour B climate)
 - Additional Tour B rooms: B201, B112, B101
-
-Author: Data Analysis Script
-Date: November 2024
 """
 
 import os
