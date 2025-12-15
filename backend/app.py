@@ -1131,7 +1131,7 @@ def get_forecasting():
         if model_type == 'elasticnet':
             # Use pandas to handle NaN filling properly
             temp_series = pd.Series(lookback_data)
-            temp_series = temp_series.fillna(method='ffill').fillna(method='bfill').fillna(temp_series.mean())
+            temp_series = temp_series.ffill().bfill().fillna(temp_series.mean())
             lookback_data = temp_series.values
         else:
             # For exponential smoothing, remove NaN values
@@ -1173,7 +1173,7 @@ def get_forecasting():
                         predictions = ses_model.forecast(steps=forecast_days).values
             elif model_type == 'elasticnet' and os.path.exists(model_path):
                 model = ElasticNetForecaster.load(model_path)
-                X_test = lookback_data[-90:].reshape(1, -1)  # Use last 90 days
+                X_test = lookback_data[-lookback_days:].reshape(1, -1)  # Use lookback period
                 predictions = model.predict(X_test)[0]
             else:
                 # If no saved model, use simple moving average as fallback
