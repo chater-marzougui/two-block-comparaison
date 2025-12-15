@@ -981,6 +981,285 @@ def get_comparison_metrics():
     })
 
 
+@app.route('/api/cumulative-energy', methods=['GET'])
+def get_cumulative_energy():
+    """Get cumulative energy consumption over time with date range selection."""
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    aggregation = request.args.get('aggregation', 'hourly')  # hourly, daily, weekly
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].fillna(0)
+    filtered_b = power_b[mask].fillna(0)
+
+    # Calculate cumulative energy (power * time interval in hours)
+    # Assuming 15-minute intervals = 0.25 hours
+    energy_a = (filtered_a * INTERVAL_HOURS).cumsum()
+    energy_b = (filtered_b * INTERVAL_HOURS).cumsum()
+
+    # Resample based on aggregation for smoother visualization
+    if aggregation == 'daily':
+        energy_a = energy_a.resample('D').last()
+        energy_b = energy_b.resample('D').last()
+        date_format = '%Y-%m-%d'
+    elif aggregation == 'weekly':
+        energy_a = energy_a.resample('W').last()
+        energy_b = energy_b.resample('W').last()
+        date_format = '%Y-%m-%d'
+    else:  # hourly
+        energy_a = energy_a.resample('H').last()
+        energy_b = energy_b.resample('H').last()
+        date_format = '%Y-%m-%d %H:00'
+
+    # Combine into response
+    all_dates = energy_a.index.union(energy_b.index)
+    cumulative_data = []
+    for date in sorted(all_dates):
+        a_val = energy_a.get(date, 0)
+        b_val = energy_b.get(date, 0)
+        a_val = 0 if pd.isna(a_val) else round(a_val, 2)
+        b_val = 0 if pd.isna(b_val) else round(b_val, 2)
+        cumulative_data.append({
+            'date': date.strftime(date_format),
+            'tourA': a_val,
+            'tourB': b_val
+        })
+
+    return jsonify({
+        'data': cumulative_data,
+        'filters': {
+            'startDate': start_date,
+            'endDate': end_date,
+            'aggregation': aggregation
+        },
+        'summary': {
+            'tourATotal': round(energy_a.iloc[-1] if len(energy_a) > 0 else 0, 2),
+            'tourBTotal': round(energy_b.iloc[-1] if len(energy_b) > 0 else 0, 2)
+        }
+    })
+
+
+@app.route('/api/forecasting', methods=['GET'])
+def get_forecasting():
+    """Get forecasting predictions using trained models."""
+    import sys
+    import pickle
+    
+    # Add forecasting directory to path
+    forecasting_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'forecasting')
+    sys.path.insert(0, forecasting_dir)
+    
+    try:
+        from models import ExponentialSmoothingForecaster, ElasticNetForecaster, prepare_sequences
+    except ImportError as e:
+        return jsonify({'error': f'Forecasting models not available: {str(e)}'}), 500
+    
+    df, power_a, power_b = load_all_data()
+    if df is None:
+        return jsonify({'error': 'No data available'}), 500
+
+    # Parse filter parameters
+    scenario = request.args.get('scenario', '1_week')  # '1_week' or '1_month'
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Apply filters
+    mask = pd.Series(True, index=df.index)
+    if start_date:
+        mask &= df.index >= pd.to_datetime(start_date)
+    if end_date:
+        mask &= df.index <= pd.to_datetime(end_date)
+
+    filtered_a = power_a[mask].fillna(0)
+    filtered_b = power_b[mask].fillna(0)
+
+    # Aggregate to daily averages for forecasting
+    daily_a = filtered_a.resample('D').mean()
+    daily_b = filtered_b.resample('D').mean()
+
+    results = {
+        'scenario': scenario,
+        'tourA': {'actual': [], 'predicted': [], 'dates': [], 'model': ''},
+        'tourB': {'actual': [], 'predicted': [], 'dates': [], 'model': ''},
+        'filters': {
+            'startDate': start_date,
+            'endDate': end_date
+        }
+    }
+
+    # Determine which model to use and load it
+    if scenario == '1_week':
+        # Use Exponential Smoothing for 1 week forecast
+        model_name = 'exponential_smoothing'
+        lookback_days = 21  # 3 weeks
+        forecast_days = 7   # 1 week
+        model_path_a = os.path.join(forecasting_dir, 'saved_models', 'tour_A', '1_week_after_3_weeks', 'exponential_smoothing.pkl')
+        model_path_b = os.path.join(forecasting_dir, 'saved_models', 'tour_B', '1_week_after_3_weeks', 'exponential_smoothing.pkl')
+        results['tourA']['model'] = 'Exponential Smoothing'
+        results['tourB']['model'] = 'Exponential Smoothing'
+    else:  # '1_month'
+        # Use ElasticNet for 1 month forecast
+        model_name = 'elasticnet'
+        lookback_days = 90  # 3 months
+        forecast_days = 30  # 1 month
+        model_path_a = os.path.join(forecasting_dir, 'saved_models', 'tour_A', '1_month_after_3_months', 'elasticnet.pkl')
+        model_path_b = os.path.join(forecasting_dir, 'saved_models', 'tour_B', '1_month_after_3_months', 'elasticnet.pkl')
+        results['tourA']['model'] = 'ElasticNet'
+        results['tourB']['model'] = 'ElasticNet'
+
+    # Function to make predictions
+    def make_predictions(daily_data, model_path, model_type):
+        if len(daily_data) < lookback_days:
+            return [], [], []
+        
+        # Use the last available data for prediction
+        lookback_data = daily_data.values[-lookback_days:]
+        
+        try:
+            if model_type == 'exponential_smoothing':
+                # Use exponential smoothing on-the-fly
+                if os.path.exists(model_path):
+                    model = ExponentialSmoothingForecaster.load(model_path)
+                    predictions = model.predict(forecast_days)
+                else:
+                    # Train exponential smoothing on-the-fly if model doesn't exist
+                    from statsmodels.tsa.holtwinters import ExponentialSmoothing
+                    series = pd.Series(lookback_data)
+                    try:
+                        es_model = ExponentialSmoothing(
+                            series,
+                            seasonal_periods=7,
+                            trend='add',
+                            seasonal='add',
+                            use_boxcox=False
+                        ).fit()
+                    except:
+                        # Fallback to simpler model
+                        es_model = ExponentialSmoothing(
+                            series,
+                            trend='add',
+                            seasonal=None
+                        ).fit()
+                    predictions = es_model.forecast(steps=forecast_days).values
+            elif model_type == 'elasticnet' and os.path.exists(model_path):
+                model = ElasticNetForecaster.load(model_path)
+                X_test = lookback_data.reshape(1, -1)
+                predictions = model.predict(X_test)[0]
+            else:
+                # If no saved model, use simple moving average as fallback
+                predictions = np.full(forecast_days, daily_data.values[-7:].mean())
+            
+            # Generate future dates
+            last_date = daily_data.index[-1]
+            future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=forecast_days, freq='D')
+            
+            # Get actual values if they exist (for test-weeks data validation)
+            actual_values = []
+            for date in future_dates:
+                if date in daily_data.index:
+                    actual_values.append(daily_data[date])
+                else:
+                    actual_values.append(None)
+            
+            return predictions.tolist(), actual_values, [d.strftime('%Y-%m-%d') for d in future_dates]
+        except Exception as e:
+            print(f"Error making predictions: {e}")
+            return [], [], []
+
+    # Make predictions for both tours
+    pred_a, actual_a, dates_a = make_predictions(daily_a, model_path_a, model_name)
+    pred_b, actual_b, dates_b = make_predictions(daily_b, model_path_b, model_name)
+
+    results['tourA']['predicted'] = [round(p, 2) if p is not None else None for p in pred_a]
+    results['tourA']['actual'] = [round(a, 2) if a is not None and not pd.isna(a) else None for a in actual_a]
+    results['tourA']['dates'] = dates_a
+    
+    results['tourB']['predicted'] = [round(p, 2) if p is not None else None for p in pred_b]
+    results['tourB']['actual'] = [round(a, 2) if a is not None and not pd.isna(a) else None for a in actual_b]
+    results['tourB']['dates'] = dates_b
+
+    return jsonify(results)
+
+
+@app.route('/api/test-data-validation', methods=['GET'])
+def get_test_data_validation():
+    """Validate forecasting models against test-weeks data."""
+    import sys
+    
+    # Add forecasting directory to path
+    forecasting_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'forecasting')
+    sys.path.insert(0, forecasting_dir)
+    
+    # Load test-weeks data
+    test_data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test-weeks')
+    
+    if not os.path.exists(test_data_dir):
+        return jsonify({'error': 'Test data not found'}), 404
+    
+    test_files = get_data_files(test_data_dir)
+    if not test_files:
+        return jsonify({'error': 'No test files found'}), 404
+    
+    # Load test data
+    all_test_data = []
+    for file_path in test_files:
+        df = load_single_file(file_path)
+        if df is not None:
+            all_test_data.append(df)
+    
+    if not all_test_data:
+        return jsonify({'error': 'Failed to load test data'}), 500
+    
+    test_df = pd.concat(all_test_data, ignore_index=False)
+    test_df = test_df[test_df.index.notna()]
+    test_df = test_df.sort_index()
+    
+    # Get power columns for test data
+    power_col_a = get_power_column(test_df, 'A')
+    power_col_b = get_power_column(test_df, 'B')
+    
+    if not power_col_a or not power_col_b:
+        return jsonify({'error': 'Power columns not found in test data'}), 500
+    
+    test_power_a = clean_power_data(test_df[power_col_a])
+    test_power_b = clean_power_data(test_df[power_col_b])
+    
+    # Aggregate to daily
+    test_daily_a = test_power_a.resample('D').mean()
+    test_daily_b = test_power_b.resample('D').mean()
+    
+    results = {
+        'testDataInfo': {
+            'dateRange': {
+                'start': str(test_df.index.min()),
+                'end': str(test_df.index.max())
+            },
+            'totalDays': len(test_daily_a)
+        },
+        'tourA': {
+            'dates': [d.strftime('%Y-%m-%d') for d in test_daily_a.index],
+            'actual': [round(v, 2) if not pd.isna(v) else None for v in test_daily_a.values]
+        },
+        'tourB': {
+            'dates': [d.strftime('%Y-%m-%d') for d in test_daily_b.index],
+            'actual': [round(v, 2) if not pd.isna(v) else None for v in test_daily_b.values]
+        }
+    }
+    
+    return jsonify(results)
+
+
 if __name__ == '__main__':
     # Preload data on startup
     print("Loading data...")
