@@ -74,7 +74,7 @@ pip install -r requirements.txt
 # Run simple example (fast - uses Random Forest only)
 python example.py
 
-# Run all models (LSTM, Prophet, ElasticNet, Exponential Smoothing, Random Forest)
+# Run all models (LSTM, Prophet, ElasticNet, Exponential Smoothing, Extra Trees)
 python forecast_energy.py
 ```
 
