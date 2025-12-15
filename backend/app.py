@@ -1126,17 +1126,38 @@ def get_forecasting():
         # Use the last available data for prediction
         lookback_data = daily_data.values[-lookback_days:]
         
+        # For ElasticNet, we need exactly lookback_days features
+        # Fill NaN values with forward fill then backward fill
+        if model_type == 'elasticnet':
+            # Use pandas to handle NaN filling properly
+            temp_series = pd.Series(lookback_data)
+            temp_series = temp_series.fillna(method='ffill').fillna(method='bfill').fillna(temp_series.mean())
+            lookback_data = temp_series.values
+        else:
+            # For exponential smoothing, remove NaN values
+            lookback_data = lookback_data[~np.isnan(lookback_data)]
+            if len(lookback_data) < 7:
+                return [], [], []
+        
         try:
             if model_type == 'exponential_smoothing':
                 # Use exponential smoothing on-the-fly
                 if os.path.exists(model_path):
-                    model = ExponentialSmoothingForecaster.load(model_path)
-                    predictions = model.predict(forecast_days)
+                    try:
+                        model = ExponentialSmoothingForecaster.load(model_path)
+                        predictions = model.predict(forecast_days)
+                    except:
+                        # If model loading fails, use simple exponential smoothing
+                        from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+                        series = pd.Series(lookback_data)
+                        ses_model = SimpleExpSmoothing(series).fit()
+                        predictions = ses_model.forecast(steps=forecast_days).values
                 else:
                     # Train exponential smoothing on-the-fly if model doesn't exist
                     from statsmodels.tsa.holtwinters import ExponentialSmoothing
                     series = pd.Series(lookback_data)
                     try:
+                        # Try with weekly seasonality
                         es_model = ExponentialSmoothing(
                             series,
                             seasonal_periods=7,
@@ -1144,21 +1165,23 @@ def get_forecasting():
                             seasonal='add',
                             use_boxcox=False
                         ).fit()
+                        predictions = es_model.forecast(steps=forecast_days).values
                     except:
-                        # Fallback to simpler model
-                        es_model = ExponentialSmoothing(
-                            series,
-                            trend='add',
-                            seasonal=None
-                        ).fit()
-                    predictions = es_model.forecast(steps=forecast_days).values
+                        # Fallback to simple exponential smoothing
+                        from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+                        ses_model = SimpleExpSmoothing(series).fit()
+                        predictions = ses_model.forecast(steps=forecast_days).values
             elif model_type == 'elasticnet' and os.path.exists(model_path):
                 model = ElasticNetForecaster.load(model_path)
-                X_test = lookback_data.reshape(1, -1)
+                X_test = lookback_data[-90:].reshape(1, -1)  # Use last 90 days
                 predictions = model.predict(X_test)[0]
             else:
                 # If no saved model, use simple moving average as fallback
-                predictions = np.full(forecast_days, daily_data.values[-7:].mean())
+                predictions = np.full(forecast_days, lookback_data[-7:].mean())
+            
+            # Check for NaN in predictions and replace with moving average
+            if np.any(np.isnan(predictions)):
+                predictions = np.full(forecast_days, lookback_data[-7:].mean())
             
             # Generate future dates
             last_date = daily_data.index[-1]
@@ -1175,6 +1198,8 @@ def get_forecasting():
             return predictions.tolist(), actual_values, [d.strftime('%Y-%m-%d') for d in future_dates]
         except Exception as e:
             print(f"Error making predictions: {e}")
+            import traceback
+            traceback.print_exc()
             return [], [], []
 
     # Make predictions for both tours
