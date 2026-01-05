@@ -938,19 +938,25 @@ def get_forecasting():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
-    # Apply filters
-    mask = pd.Series(True, index=df.index)
-    if start_date:
-        mask &= df.index >= pd.to_datetime(start_date)
-    if end_date:
-        mask &= df.index <= pd.to_datetime(end_date)
-
-    filtered_a = power_a[mask].fillna(0)
-    filtered_b = power_b[mask].fillna(0)
-
-    # Aggregate to daily averages for forecasting
-    daily_a = filtered_a.resample('D').mean()
-    daily_b = filtered_b.resample('D').mean()
+    # For forecasting, we should NOT apply date filters to training data
+    # Instead, use all available historical data for better predictions
+    # The filters are only for displaying/validating against actual future data
+    
+    # Aggregate to daily averages for forecasting (without filling zeros)
+    daily_a = power_a.resample('D').mean()
+    daily_b = power_b.resample('D').mean()
+    
+    # DEBUG: Check the raw data
+    print(f"\n=== FORECASTING DEBUG INFO ===")
+    print(f"Scenario: {scenario}")
+    print(f"Total 15-min records for Tour A: {len(power_a)}, Non-null: {power_a.notna().sum()}")
+    print(f"Total 15-min records for Tour B: {len(power_b)}, Non-null: {power_b.notna().sum()}")
+    print(f"Daily aggregated Tour A: {len(daily_a)} days, Non-null: {daily_a.notna().sum()}")
+    print(f"Daily aggregated Tour B: {len(daily_b)} days, Non-null: {daily_b.notna().sum()}")
+    print(f"Tour A date range: {daily_a.index.min()} to {daily_a.index.max()}")
+    print(f"Tour B date range: {daily_b.index.min()} to {daily_b.index.max()}")
+    print(f"Tour A stats: mean={daily_a.mean():.2f}, median={daily_a.median():.2f}, std={daily_a.std():.2f}")
+    print(f"Tour B stats: mean={daily_b.mean():.2f}, median={daily_b.median():.2f}, std={daily_b.std():.2f}")
 
     results = {
         'scenario': scenario,
@@ -983,79 +989,115 @@ def get_forecasting():
         results['tourB']['model'] = 'ElasticNet'
 
     # Function to make predictions
-    def make_predictions(daily_data, model_path, model_type):
-        if len(daily_data) < lookback_days:
+    def make_predictions(daily_data, model_path, model_type, tour_name):
+        print(f"\n--- Making predictions for {tour_name} ---")
+        print(f"Model path: {model_path}")
+        print(f"Model exists: {os.path.exists(model_path)}")
+        
+        # Remove NaN values and get clean data
+        clean_data = daily_data.dropna()
+        
+        print(f"Original daily data: {len(daily_data)} days")
+        print(f"After dropna: {len(clean_data)} days")
+        print(f"Lookback required: {lookback_days} days")
+        
+        if len(clean_data) < lookback_days:
+            print(f"❌ Insufficient data: {len(clean_data)} days available, need {lookback_days}")
             return [], [], []
         
         # Use the last available data for prediction
-        lookback_data = daily_data.values[-lookback_days:]
+        lookback_data = clean_data.values[-lookback_days:]
+        
+        print(f"Lookback data shape: {lookback_data.shape}")
+        print(f"Lookback data stats: mean={lookback_data.mean():.2f}, min={lookback_data.min():.2f}, max={lookback_data.max():.2f}")
+        print(f"Last 5 values in lookback: {lookback_data[-5:]}")
+        
+        # Verify we have actual power values (not zeros or very small values)
+        if lookback_data.mean() < 0.1:
+            print(f"⚠️ WARNING: lookback data has very low average: {lookback_data.mean()}")
+            print(f"⚠️ Data range: {lookback_data.min()} to {lookback_data.max()}")
+            print(f"⚠️ This will result in poor predictions!")
         
         # For ElasticNet, we need exactly lookback_days features
-        # Fill NaN values with forward fill then backward fill
         if model_type == 'elasticnet':
-            # Use pandas to handle NaN filling properly
-            temp_series = pd.Series(lookback_data)
-            temp_series = temp_series.ffill().bfill().fillna(temp_series.mean())
-            lookback_data = temp_series.values
+            # Data should already be clean, but ensure no NaN
+            if np.any(np.isnan(lookback_data)):
+                temp_series = pd.Series(lookback_data)
+                temp_series = temp_series.ffill().bfill().fillna(temp_series.mean())
+                lookback_data = temp_series.values
         else:
-            # For exponential smoothing, remove NaN values
-            lookback_data = lookback_data[~np.isnan(lookback_data)]
+            # For exponential smoothing, ensure no NaN values remain
+            if np.any(np.isnan(lookback_data)):
+                lookback_data = lookback_data[~np.isnan(lookback_data)]
             if len(lookback_data) < 7:
                 return [], [], []
         
         try:
             if model_type == 'exponential_smoothing':
-                # Use exponential smoothing on-the-fly
-                if os.path.exists(model_path):
-                    try:
-                        model = ExponentialSmoothingForecaster.load(model_path)
-                        predictions = model.predict(forecast_days)
-                    except:
-                        # If model loading fails, use simple exponential smoothing
-                        from statsmodels.tsa.holtwinters import SimpleExpSmoothing
-                        series = pd.Series(lookback_data)
-                        ses_model = SimpleExpSmoothing(series).fit()
-                        predictions = ses_model.forecast(steps=forecast_days).values
-                else:
-                    # Train exponential smoothing on-the-fly if model doesn't exist
-                    from statsmodels.tsa.holtwinters import ExponentialSmoothing
-                    series = pd.Series(lookback_data)
-                    try:
-                        # Try with weekly seasonality
-                        es_model = ExponentialSmoothing(
-                            series,
-                            seasonal_periods=7,
-                            trend='add',
-                            seasonal='add',
-                            use_boxcox=False
-                        ).fit()
-                        predictions = es_model.forecast(steps=forecast_days).values
-                    except:
-                        # Fallback to simple exponential smoothing
-                        from statsmodels.tsa.holtwinters import SimpleExpSmoothing
-                        ses_model = SimpleExpSmoothing(series).fit()
-                        predictions = ses_model.forecast(steps=forecast_days).values
+                # Train exponential smoothing on-the-fly with current daily data
+                # Note: Saved models were trained on different data aggregation, so we retrain
+                print(f"Training Exponential Smoothing on current daily data")
+                from statsmodels.tsa.holtwinters import ExponentialSmoothing
+                series = pd.Series(lookback_data)
+                print(f"Training data: {len(series)} points, mean={series.mean():.2f}")
+                
+                try:
+                    # Try with weekly seasonality (7 days)
+                    print("Trying ExponentialSmoothing with weekly seasonality...")
+                    es_model = ExponentialSmoothing(
+                        series,
+                        seasonal_periods=7,
+                        trend='add',
+                        seasonal='add',
+                        use_boxcox=False
+                    ).fit()
+                    predictions = es_model.forecast(steps=forecast_days).values
+                    print(f"✓ Predictions with seasonality: {predictions}")
+                except Exception as e:
+                    # Fallback to simple exponential smoothing without seasonality
+                    print(f"⚠️ Seasonal model failed: {e}, trying without seasonality")
+                    from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+                    ses_model = SimpleExpSmoothing(series).fit()
+                    predictions = ses_model.forecast(steps=forecast_days).values
+                    print(f"✓ Predictions without seasonality: {predictions}")
+
             elif model_type == 'elasticnet' and os.path.exists(model_path):
+                print(f"Loading ElasticNet model from {model_path}")
                 model = ElasticNetForecaster.load(model_path)
                 X_test = lookback_data[-lookback_days:].reshape(1, -1)  # Use lookback period
+                print(f"X_test shape: {X_test.shape}")
                 predictions = model.predict(X_test)[0]
+                print(f"Predictions from ElasticNet: {predictions}")
             else:
                 # If no saved model, use simple moving average as fallback
-                predictions = np.full(forecast_days, lookback_data[-7:].mean())
+                print(f"⚠️ No model available, using moving average fallback")
+                avg = lookback_data[-7:].mean()
+                print(f"7-day moving average: {avg:.2f}")
+                predictions = np.full(forecast_days, avg)
+                print(f"Fallback predictions: {predictions}")
             
             # Check for NaN in predictions and replace with moving average
             if np.any(np.isnan(predictions)):
-                predictions = np.full(forecast_days, lookback_data[-7:].mean())
+                print(f"⚠️ Found NaN in predictions, replacing with moving average")
+                avg = lookback_data[-7:].mean()
+                predictions = np.full(forecast_days, avg)
+                print(f"Replaced with: {predictions}")
             
-            # Generate future dates
-            last_date = daily_data.index[-1]
+            print(f"Final predictions: {predictions}")
+            
+            # Generate future dates from the last date in the clean dataset
+            clean_data = daily_data.dropna()
+            last_date = clean_data.index[-1]
+            print(f"Last date in clean data: {last_date}")
             future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=forecast_days, freq='D')
+            print(f"Future dates: {future_dates[0]} to {future_dates[-1]}")
             
-            # Get actual values if they exist (for test-weeks data validation)
+            # Get actual values if they exist (for validation against future known data)
             actual_values = []
             for date in future_dates:
                 if date in daily_data.index:
-                    actual_values.append(daily_data[date])
+                    val = daily_data[date]
+                    actual_values.append(val if not pd.isna(val) else None)
                 else:
                     actual_values.append(None)
             
@@ -1067,8 +1109,8 @@ def get_forecasting():
             return [], [], []
 
     # Make predictions for both tours
-    pred_a, actual_a, dates_a = make_predictions(daily_a, model_path_a, model_name)
-    pred_b, actual_b, dates_b = make_predictions(daily_b, model_path_b, model_name)
+    pred_a, actual_a, dates_a = make_predictions(daily_a, model_path_a, model_name, "Tour A")
+    pred_b, actual_b, dates_b = make_predictions(daily_b, model_path_b, model_name, "Tour B")
 
     results['tourA']['predicted'] = [round(p, 2) if p is not None else None for p in pred_a]
     results['tourA']['actual'] = [round(a, 2) if a is not None and not pd.isna(a) else None for a in actual_a]
