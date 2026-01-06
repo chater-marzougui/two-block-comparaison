@@ -1000,17 +1000,26 @@ def get_forecasting():
         print(f"Original daily data: {len(daily_data)} days")
         print(f"After dropna: {len(clean_data)} days")
         print(f"Lookback required: {lookback_days} days")
+        print(f"Forecast period: {forecast_days} days")
         
-        if len(clean_data) < lookback_days:
-            print(f"❌ Insufficient data: {len(clean_data)} days available, need {lookback_days}")
+        # We need at least lookback_days + forecast_days to do prediction on real data
+        if len(clean_data) < lookback_days + forecast_days:
+            print(f"❌ Insufficient data: {len(clean_data)} days available, need {lookback_days + forecast_days}")
             return [], [], []
         
-        # Use the last available data for prediction
-        lookback_data = clean_data.values[-lookback_days:]
+        # Hold out the last forecast_days as test/actual data
+        # Use data up to (total - forecast_days) for training
+        train_end_idx = len(clean_data) - forecast_days
+        lookback_data = clean_data.values[train_end_idx - lookback_days:train_end_idx]
+        actual_test_data = clean_data.values[train_end_idx:train_end_idx + forecast_days]
+        actual_test_dates = clean_data.index[train_end_idx:train_end_idx + forecast_days]
         
         print(f"Lookback data shape: {lookback_data.shape}")
         print(f"Lookback data stats: mean={lookback_data.mean():.2f}, min={lookback_data.min():.2f}, max={lookback_data.max():.2f}")
         print(f"Last 5 values in lookback: {lookback_data[-5:]}")
+        print(f"Actual test data shape: {actual_test_data.shape}")
+        print(f"Actual test data stats: mean={actual_test_data.mean():.2f}, min={actual_test_data.min():.2f}, max={actual_test_data.max():.2f}")
+        print(f"Test dates: {actual_test_dates[0]} to {actual_test_dates[-1]}")
         
         # Verify we have actual power values (not zeros or very small values)
         if lookback_data.mean() < 0.1:
@@ -1085,23 +1094,11 @@ def get_forecasting():
             
             print(f"Final predictions: {predictions}")
             
-            # Generate future dates from the last date in the clean dataset
-            clean_data = daily_data.dropna()
-            last_date = clean_data.index[-1]
-            print(f"Last date in clean data: {last_date}")
-            future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=forecast_days, freq='D')
-            print(f"Future dates: {future_dates[0]} to {future_dates[-1]}")
+            # Return predictions, actual test values, and their dates
+            actual_values = actual_test_data.tolist()
+            test_dates = [d.strftime('%Y-%m-%d') for d in actual_test_dates]
             
-            # Get actual values if they exist (for validation against future known data)
-            actual_values = []
-            for date in future_dates:
-                if date in daily_data.index:
-                    val = daily_data[date]
-                    actual_values.append(val if not pd.isna(val) else None)
-                else:
-                    actual_values.append(None)
-            
-            return predictions.tolist(), actual_values, [d.strftime('%Y-%m-%d') for d in future_dates]
+            return predictions.tolist(), actual_values, test_dates
         except Exception as e:
             print(f"Error making predictions: {e}")
             import traceback

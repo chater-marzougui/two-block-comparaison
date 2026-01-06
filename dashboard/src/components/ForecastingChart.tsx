@@ -84,8 +84,8 @@ const ForecastingChart: React.FC = () => {
 
   const scenarioTitle =
     scenario === '1_week'
-      ? '1 Week Forecast (after 3 weeks)'
-      : '1 Month Forecast (after 3 months)';
+      ? 'Predict Last 1 Week Using Previous 3 Weeks'
+      : 'Predict Last 1 Month Using Previous 3 Months';
 
   const modelName = scenario === '1_week' ? 'Exponential Smoothing' : 'ElasticNet';
 
@@ -215,11 +215,12 @@ const ForecastingChart: React.FC = () => {
       </ResponsiveContainer>
       <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
         <p style={{ margin: '5px 0', fontSize: '13px', color: '#666' }}>
-          <strong>Legend:</strong> Dashed lines represent predicted values using the trained model.
-          Solid lines show actual measured values (when available from test data).
+          <strong>Legend:</strong> Dashed lines represent predicted values using the trained model on historical data 
+          (excluding the test period). Solid lines show actual measured values from the held-out test period.
         </p>
         <p style={{ margin: '5px 0', fontSize: '13px', color: '#666' }}>
-          <strong>Model:</strong> {modelName} is used for this forecast scenario.
+          <strong>Model:</strong> {modelName} is trained on available data minus the last {scenario === '1_week' ? 'week' : 'month'}, 
+          then predicts values for that held-out period to validate accuracy.
         </p>
       </div>
     </motion.div>
