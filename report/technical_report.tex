@@ -1,0 +1,619 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+% Define colors
+\definecolor{titlecolor}{RGB}{0,51,102}
+\definecolor{sectioncolor}{RGB}{0,102,204}
+
+% Configure headers and footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Tour A vs Tour B - Technical Report}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Section formatting
+\titleformat{\section}
+  {\Large\bfseries\color{sectioncolor}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{sectioncolor}}
+  {\thesubsection}{1em}{}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries\color{titlecolor} Tour A vs Tour B\\[0.3cm]}
+    {\LARGE\bfseries Power Consumption Comparative Analysis\\[1.5cm]}
+    
+    {\large\bfseries Technical Report\\[0.3cm]}
+    
+    \vspace{1.5cm}
+    
+    {\Large
+    \begin{tabular}{c}
+        Chater Marzougui \\
+        Brahim Ben Lamin Ghouma
+    \end{tabular}
+    }
+    
+    \vfill
+    
+    {\large January 3, 2026}
+    
+    \vspace{1cm}
+    
+    \includegraphics[width=0.4\textwidth]{images/01_power_timeseries.png}
+    
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Abstract
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+This technical report presents a comprehensive analysis of power consumption patterns between Tour A and Tour B buildings. The study encompasses exploratory data analysis, visualization of consumption patterns, development and evaluation of AI/ML forecasting models, and a web-based dashboard for interactive data exploration. Key findings reveal that Tour B consumes 14.2\% more power than Tour A on average, with significantly higher peak demands. The report details the complete system architecture including data processing pipelines, forecasting models (LSTM, Prophet, ElasticNet, Exponential Smoothing, and Random Forest), backend API infrastructure, and  React-based frontend dashboard.
+
+\newpage
+
+\section{Introduction}
+
+\subsection{Project Overview}
+This project provides a comprehensive platform for analyzing and comparing power consumption between two building blocks, Tour A and Tour B. The system integrates data exploration, machine learning-based forecasting, and interactive visualization components to provide insights into energy usage patterns and efficiency metrics.
+
+\subsection{Objectives}
+The primary objectives of this project are:
+\begin{itemize}
+    \item Analyze historical power consumption data from two building blocks
+    \item Identify consumption patterns and efficiency differences
+    \item Develop predictive models for future energy consumption
+    \item Provide an interactive dashboard for data exploration
+    \item Determine root causes for consumption differences
+\end{itemize}
+
+\subsection{Data Overview}
+The dataset covers power consumption data spanning from November 2023 to February 2025, with measurements recorded at 15-minute intervals. The data includes metrics such as:
+\begin{itemize}
+    \item Power consumption (kW)
+    \item Energy usage (kWh)
+    \item Voltage (V)
+    \item Current (A)
+    \item Power Factor
+    \item Reactive Power (kvar)
+\end{itemize}
+
+Data availability: Tour A (95.2\% coverage), Tour B (99.8\% coverage).
+
+\newpage
+
+\section{System Architecture}
+
+\subsection{Project Structure}
+The project consists of four main components working together to provide a complete analytical solution:
+
+\begin{enumerate}
+    \item \textbf{Data Exploration Scripts}: Python-based scripts for loading, cleaning, and analyzing power consumption data
+    \item \textbf{Forecasting Module}: AI/ML models for predicting future energy consumption patterns
+    \item \textbf{Flask Backend API}: REST API serving data dynamically with comprehensive filtering options
+    \item \textbf{React Dashboard}: Interactive web interface for visualizing comparisons and insights
+\end{enumerate}
+
+\subsection{Technology Stack}
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Component} & \textbf{Technologies} \\ \midrule
+Data Processing & Python, Pandas, NumPy, Matplotlib, Seaborn \\
+Machine Learning & TensorFlow/Keras, Prophet, Scikit-learn \\
+Backend API & Flask, Python 3.8+ \\
+Frontend & React, TypeScript, Recharts \\
+Data Format & CSV, XLSX, JSON \\ \bottomrule
+\end{tabular}
+\caption{Technology Stack Overview}
+\end{table}
+
+\subsection{Data Flow Architecture}
+The system follows a modular architecture where data flows from raw CSV/XLSX files through processing pipelines to visualization layers:
+
+\begin{enumerate}
+    \item Raw data ingestion from SINERT data concentrator files
+    \item Data cleaning and normalization
+    \item Statistical analysis and pattern extraction
+    \item Model training and prediction generation
+    \item API exposure of processed data
+    \item Real-time visualization in dashboard
+\end{enumerate}
+
+\newpage
+
+\section{Data Exploration - Version 1}
+
+The initial data exploration phase focused on understanding basic consumption patterns, temporal variations, and comparative metrics between Tour A and Tour B.
+
+\subsection{Power Time Series Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/01_power_timeseries.png}
+    \caption{Power consumption time series for Tour A and Tour B over the entire observation period. The plot reveals temporal patterns, seasonal variations, and comparative consumption levels between the two buildings.}
+\end{figure}
+
+\textbf{Significance}: This visualization provides the foundational understanding of consumption dynamics. Tour B consistently shows higher consumption with more volatile patterns, indicating potentially different usage profiles or equipment characteristics.
+
+\subsection{Hourly Consumption Patterns}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/02_hourly_patterns.png}
+    \caption{Average hourly power consumption patterns showing daily cycles. Peak hours and off-peak periods are clearly identifiable for both buildings.}
+\end{figure}
+
+\textbf{Significance}: Hourly patterns reveal operational schedules and usage intensity throughout the day. Tour B exhibits higher peak consumption at 11:00 AM (7.47 kW) while Tour A maintains more moderate consumption levels. The minimum consumption for Tour B occurs at 5:00 AM (2.53 kW).
+
+\subsection{Distribution Comparison}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/03_distribution_comparison.png}
+    \caption{Statistical distribution of power consumption values for both buildings, showing probability density functions and quartile distributions.}
+\end{figure}
+
+\textbf{Significance}: Distribution analysis reveals that Tour A has a more concentrated consumption pattern around 3.63 kW (average), while Tour B shows wider variation with an average of 4.15 kW. This indicates more consistent usage in Tour A versus more variable demand in Tour B.
+
+\subsection{Weekly Patterns}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/04_weekly_patterns.png}
+    \caption{Weekly consumption patterns highlighting weekday versus weekend differences. The plot shows average consumption for each day of the week.}
+\end{figure}
+
+\textbf{Significance}: Clear weekday-weekend differentiation is observed. Tour B shows 79.2\% higher consumption on weekdays (4.75 kW) compared to weekends (2.65 kW), suggesting strong occupancy-driven patterns. Tour A exhibits similar but less pronounced patterns (4.17 kW weekday vs 2.31 kW weekend).
+
+\subsection{Efficiency Comparison}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/05_efficiency_comparison.png}
+    \caption{Comparative efficiency metrics including load factor, peak-to-average ratio, and power factor for both buildings.}
+\end{figure}
+
+\textbf{Significance}: Tour A demonstrates superior power factor (0.892) compared to Tour B (-0.762), indicating better electrical efficiency and power quality. The negative power factor in Tour B suggests reactive power issues that may require correction for improved efficiency.
+
+\subsection{Cumulative Energy Consumption}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/06_cumulative_energy.png}
+    \caption{Cumulative energy consumption over time, showing the total energy used by each building throughout the observation period.}
+\end{figure}
+
+\textbf{Significance}: The cumulative view demonstrates that Tour B consistently consumes more energy over time. Daily consumption estimates: Tour B (99.6 kWh), leading to approximately 2,987.6 kWh monthly consumption for Tour B.
+
+\newpage
+
+\section{Data Exploration - Version 2}
+
+Enhanced analysis incorporating additional metrics and advanced visualization techniques for deeper insights into consumption patterns.
+
+\subsection{Monthly Comparison}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/v2_01_monthly_comparison.png}
+    \caption{Month-by-month comparison of average power consumption, highlighting seasonal variations and long-term trends.}
+\end{figure}
+
+\textbf{Significance}: Monthly aggregation reveals seasonal patterns and potential anomalies. The analysis helps identify months with unusual consumption patterns that may require investigation.
+
+\subsection{Heatmap Comparison}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/v2_02_heatmap_comparison.png}
+    \caption{Heatmap visualization showing consumption intensity across different time periods (hour of day vs. day of week).}
+\end{figure}
+
+\textbf{Significance}: The heatmap provides a quick visual reference for identifying high-consumption periods. This facilitates targeting of energy management interventions during peak usage times.
+
+\subsection{Enhanced Efficiency Metrics}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/v2_03_efficiency_metrics.png}
+    \caption{Comprehensive efficiency metrics including load factor, utilization rates, and comparative performance indicators.}
+\end{figure}
+
+\textbf{Significance}: Detailed efficiency metrics enable quantitative comparison of building performance and identification of improvement opportunities.
+
+\subsection{Peak Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/v2_04_peak_analysis.png}
+    \caption{Analysis of peak consumption events, including frequency, magnitude, and temporal distribution of peak loads.}
+\end{figure}
+
+\textbf{Significance}: Peak analysis is crucial for demand management and capacity planning. Tour B's peak of 73.01 kW significantly exceeds Tour A's 20.24 kW, indicating potential for load management strategies.
+
+\newpage
+
+\section{AI/ML Forecasting Models}
+
+\subsection{Model Architecture Overview}
+The forecasting system implements five distinct machine learning approaches to predict future energy consumption:
+
+\begin{enumerate}
+    \item \textbf{LSTM (Long Short-Term Memory)}: Deep learning model with 2-layer architecture for capturing complex temporal dependencies
+    \item \textbf{Prophet}: Facebook's time series forecasting tool handling seasonality automatically
+    \item \textbf{ElasticNet}: Linear regression with L1 and L2 regularization
+    \item \textbf{Exponential Smoothing}: Classical statistical method for trend and seasonality
+    \item \textbf{Random Forest}: Ensemble method using decision trees
+\end{enumerate}
+
+\subsection{Forecasting Scenarios}
+Two prediction scenarios were implemented:
+\begin{itemize}
+    \item \textbf{1 Week Forecast}: Predicts 1 week consumption using 3 weeks of historical data
+    \item \textbf{1 Month Forecast}: Predicts 1 month consumption using 3 months of historical data
+\end{itemize}
+
+\subsection{Model Performance - Tour A (1 Week)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_week_after_3_weeks_metrics_comparison_20251215_070905.png}
+    \caption{Performance metrics comparison for Tour A 1-week forecasting models showing MAE, RMSE, R², and MAPE.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_week_after_3_weeks_metrics_table_20251215_070905.png}
+    \caption{Tabular representation of Tour A 1-week forecast model performance metrics.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_week_after_3_weeks_ranking_20251215_070905.png}
+    \caption{Model ranking by performance for Tour A 1-week forecasts, ordered by RMSE.}
+\end{figure}
+
+\subsection{Model Performance - Tour A (1 Month)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_month_after_3_months_metrics_comparison_20251215_070905.png}
+    \caption{Performance metrics comparison for Tour A 1-month forecasting models.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_month_after_3_months_metrics_table_20251215_070905.png}
+    \caption{Detailed metrics table for Tour A 1-month forecast models.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_month_after_3_months_ranking_20251215_070905.png}
+    \caption{Ranking of models for Tour A 1-month forecasts based on RMSE performance.}
+\end{figure}
+
+\subsection{Model Performance - Tour B (1 Week)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_week_after_3_weeks_metrics_comparison_20251215_070910.png}
+    \caption{Comparative analysis of Tour B 1-week forecast model performance across all metrics.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_week_after_3_weeks_metrics_table_20251215_070910.png}
+    \caption{Performance metrics table for Tour B 1-week forecasting models.}
+\end{figure}
+
+\subsection{Model Performance - Tour B (1 Month)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_month_after_3_months_metrics_comparison_20251215_070910.png}
+    \caption{Metrics comparison for Tour B 1-month forecast models.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/1_month_after_3_months_metrics_table_20251215_070910.png}
+    \caption{Detailed performance metrics for Tour B 1-month forecasts.}
+\end{figure}
+
+\subsection{Comparative Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/tour_comparison_1_week_after_3_weeks_20251215_070914.png}
+    \caption{Side-by-side comparison of 1-week forecast performance between Tour A and Tour B.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/tour_comparison_1_month_after_3_months_20251215_070914.png}
+    \caption{Comparative analysis of 1-month forecast accuracy for both buildings.}
+\end{figure}
+
+\subsection{Model Evaluation Metrics}
+
+\textbf{Metrics Explanation}:
+\begin{itemize}
+    \item \textbf{MAE (Mean Absolute Error)}: Average absolute difference in kW - lower is better
+    \item \textbf{RMSE (Root Mean Squared Error)}: Penalizes large errors more - lower is better
+    \item \textbf{R² (Coefficient of Determination)}: Proportion of variance explained (0-1) - higher is better
+    \item \textbf{MAPE (Mean Absolute Percentage Error)}: Average percentage error - lower is better
+\end{itemize}
+
+\textbf{Key Findings}:
+\begin{itemize}
+    \item Models demonstrate good predictive performance for both buildings
+    \item Exponential Smoothing and ElasticNet show particularly strong results
+    \item Tour A predictions generally exhibit lower error rates due to more consistent patterns
+    \item Tour B's variable consumption makes forecasting more challenging
+\end{itemize}
+
+\newpage
+
+\section{Backend Infrastructure}
+
+\subsection{Flask API Architecture}
+The backend API is built using Flask, a lightweight Python web framework, providing RESTful endpoints for data access and manipulation.
+
+\subsection{API Endpoints}
+
+\begin{longtable}{@{}p{4cm}p{5cm}p{5cm}@{}}
+\toprule
+\textbf{Endpoint} & \textbf{Description} & \textbf{Parameters} \\ \midrule
+\endfirsthead
+\toprule
+\textbf{Endpoint} & \textbf{Description} & \textbf{Parameters} \\ \midrule
+\endhead
+GET /api/health & Health check status & - \\
+GET /api/data-info & Data availability info & - \\
+GET /api/summary & Summary statistics & month, start\_date, end\_date \\
+GET /api/hourly & Hourly patterns & month, day\_of\_week \\
+GET /api/weekly & Weekly patterns & month \\
+GET /api/monthly & Monthly trends & year \\
+GET /api/timeseries & Time series data & aggregation, date range \\
+GET /api/insights & Key insights & month \\
+GET /api/heatmap & Heatmap data & month \\
+GET /api/forecasting & Forecast predictions & scenario \\
+\bottomrule
+\caption{Backend API Endpoints}
+\end{longtable}
+
+\subsection{Data Processing Pipeline}
+The backend implements a robust data processing pipeline:
+\begin{enumerate}
+    \item Load raw CSV/XLSX files from data directory
+    \item Normalize column names across different file formats
+    \item Filter outliers and invalid data points
+    \item Resample to consistent 15-minute intervals
+    \item Calculate derived metrics and statistics
+    \item Cache results for improved performance
+    \item Serve through RESTful API endpoints
+\end{enumerate}
+
+\newpage
+
+\section{Frontend Dashboard}
+
+\subsection{Dashboard Architecture}
+The frontend is built using React with TypeScript, providing a modern, responsive, and interactive user interface for data exploration and visualization.
+
+\subsection{Key Features}
+\begin{itemize}
+    \item Dynamic filtering by month, day of week, and time aggregation
+    \item Interactive charts with hover tooltips and zoom capabilities
+    \item Real-time data updates from backend API
+    \item Responsive design for various screen sizes
+    \item Comprehensive visualization library using Recharts
+\end{itemize}
+
+\subsection{Dashboard Components}
+
+\textbf{Main Visualization Panels}:
+\begin{itemize}
+    \item Time Series Chart: Real-time power consumption trends
+    \item Hourly Pattern Analysis: Average consumption by hour
+    \item Weekly Pattern View: Day-of-week consumption comparison
+    \item Monthly Trends: Long-term consumption patterns
+    \item Forecasting Panel: Predicted vs actual values
+    \item Efficiency Metrics Dashboard: Key performance indicators
+    \item Heatmap Visualization: Consumption intensity matrix
+\end{itemize}
+
+\textbf{Interactive Controls}:
+\begin{itemize}
+    \item Month selector dropdown
+    \item Day of week filter
+    \item Aggregation level selection (hourly/daily/weekly/monthly)
+    \item Date range picker
+    \item Building comparison toggle
+\end{itemize}
+
+\subsection{Data Context Management}
+The dashboard implements React Context API for efficient state management across components, ensuring consistent data flow and reducing prop drilling.
+
+\newpage
+
+\section{Analysis: Why Block B Consumes More Than Block A}
+
+\subsection{Quantitative Differences}
+
+\textbf{Average Consumption}:
+\begin{itemize}
+    \item Tour A: 3.63 kW
+    \item Tour B: 4.15 kW
+    \item Difference: +14.2\% higher for Tour B
+\end{itemize}
+
+\textbf{Peak Consumption}:
+\begin{itemize}
+    \item Tour A: 20.24 kW
+    \item Tour B: 73.01 kW
+    \item Tour B exhibits 3.6x higher peak demand
+\end{itemize}
+
+\subsection{Identified Root Causes}
+
+\subsubsection{1. Power Factor Discrepancy}
+\begin{itemize}
+    \item Tour A: 0.892 (good efficiency)
+    \item Tour B: -0.762 (poor efficiency, reactive power issues)
+\end{itemize}
+
+\textbf{Implication}: The negative power factor in Tour B indicates significant reactive power consumption, suggesting:
+\begin{itemize}
+    \item Inefficient electrical equipment
+    \item Inductive loads without proper power factor correction
+    \item Potential need for capacitor banks installation
+\end{itemize}
+
+\subsubsection{2. Higher Weekday-Weekend Variation}
+Tour B shows 79.2\% higher consumption on weekdays versus weekends, compared to Tour A's more moderate variation. This suggests:
+\begin{itemize}
+    \item More intensive operational activities in Tour B
+    \item Potentially larger or more equipment-intensive operations
+    \item Different usage patterns or occupancy levels
+\end{itemize}
+
+\subsubsection{3. Peak Load Characteristics}
+Tour B's significantly higher peak loads (73.01 kW vs 20.24 kW) indicate:
+\begin{itemize}
+    \item Simultaneous operation of high-power equipment
+    \item Lack of load management or staggering strategies
+    \item Potential equipment sizing or operational inefficiencies
+\end{itemize}
+
+\subsubsection{4. Consumption Variability}
+Tour B exhibits wider consumption distribution, suggesting:
+\begin{itemize}
+    \item Less predictable or controlled operations
+    \item More diverse equipment portfolio
+    \item Potential for optimization through operational scheduling
+\end{itemize}
+
+\subsection{Recommendations for Tour B}
+
+\textbf{Immediate Actions}:
+\begin{enumerate}
+    \item Install power factor correction equipment (capacitor banks)
+    \item Conduct detailed equipment audit
+    \item Implement load management system
+\end{enumerate}
+
+\textbf{Medium-term Improvements}:
+\begin{enumerate}
+    \item Schedule high-power equipment to avoid simultaneous operation
+    \item Replace inefficient equipment
+    \item Implement automated energy management system
+\end{enumerate}
+
+\textbf{Long-term Strategy}:
+\begin{enumerate}
+    \item Develop comprehensive energy efficiency plan
+    \item Regular monitoring and benchmarking against Tour A
+    \item Consider renewable energy integration for peak shaving
+\end{enumerate}
+
+\subsection{Potential Savings}
+If Tour B achieves efficiency parity with Tour A:
+\begin{itemize}
+    \item Reduction in average consumption: 14.2\% (approximately 0.52 kW)
+    \item Daily savings: ~12.5 kWh
+    \item Monthly savings: ~375 kWh
+    \item Annual savings: ~4,500 kWh
+\end{itemize}
+
+\newpage
+
+\section{Conclusions}
+
+\subsection{Summary of Findings}
+This comprehensive analysis of Tour A and Tour B power consumption patterns has revealed significant differences in energy usage profiles, efficiency metrics, and operational characteristics. Key findings include:
+
+\begin{enumerate}
+    \item Tour B consumes 14.2\% more power on average than Tour A
+    \item Power quality issues in Tour B (negative power factor)
+    \item Significantly higher peak demands in Tour B
+    \item Successful development of accurate forecasting models
+    \item Comprehensive dashboard for ongoing monitoring
+\end{enumerate}
+
+\subsection{System Achievements}
+The developed system successfully integrates:
+\begin{itemize}
+    \item Robust data processing and analysis pipelines
+    \item Five different AI/ML forecasting models
+    \item RESTful API backend for data access
+    \item Interactive web-based dashboard
+    \item Comprehensive reporting capabilities
+\end{itemize}
+
+\subsection{Model Performance}
+The forecasting models demonstrate good predictive capabilities:
+\begin{itemize}
+    \item R² scores generally above 0.85 for short-term predictions
+    \item MAPE values typically below 10\% for accurate forecasts
+    \item Ensemble approach provides robustness
+\end{itemize}
+
+\subsection{Practical Implications}
+The insights generated from this analysis enable:
+\begin{itemize}
+    \item Targeted energy efficiency interventions
+    \item Informed capacity planning decisions
+    \item Cost reduction opportunities
+    \item Improved operational scheduling
+    \item Better demand response capabilities
+\end{itemize}
+
+\subsection{Future Work}
+Recommended enhancements for the system:
+\begin{enumerate}
+    \item Real-time monitoring integration
+    \item Automated alert system for anomalies
+    \item Additional forecasting models (e.g., XGBoost, GRU)
+    \item Weather data integration for improved predictions
+    \item Cost analysis module
+    \item Carbon footprint tracking
+    \item Mobile application development
+\end{enumerate}
+
+\subsection{Final Remarks}
+This project demonstrates the power of combining data analytics, machine learning, and modern web technologies to address real-world energy management challenges. The comprehensive platform provides both immediate insights and long-term predictive capabilities, enabling data-driven decision-making for energy efficiency improvements.
+
+\end{document}
